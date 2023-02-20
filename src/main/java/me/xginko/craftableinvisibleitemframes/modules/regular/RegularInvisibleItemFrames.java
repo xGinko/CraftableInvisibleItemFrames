@@ -17,10 +17,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
-import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -46,14 +44,15 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
         regular_invisible_item_frame_tag = new NamespacedKey(plugin, "invisible-itemframe");
         regular_invisible_item_frame_recipe = new NamespacedKey(plugin, "invisible-itemframe-recipe");
 
-        this.untitled_invisible_item_frame = new ItemStack(Material.ITEM_FRAME, 1);
-        ItemMeta meta = untitled_invisible_item_frame.getItemMeta();
+        ItemStack invisible_item_frame = new ItemStack(Material.ITEM_FRAME, 1);
+        ItemMeta meta = invisible_item_frame.getItemMeta();
         if (config.should_enchant_frame_items) {
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             meta.addEnchant(Enchantment.DURABILITY, 1, true);
         }
         meta.getPersistentDataContainer().set(regular_invisible_item_frame_tag, PersistentDataType.BYTE, (byte) 1);
-        untitled_invisible_item_frame.setItemMeta(meta);
+        invisible_item_frame.setItemMeta(meta);
+        this.untitled_invisible_item_frame = invisible_item_frame;
     }
 
     @Override
@@ -83,7 +82,7 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
             }
 
             // If the frame item has the invisible tag, make the placed item frame invisible
-            if (!itemFrameInHand.getItemMeta().getPersistentDataContainer().has(CraftableInvisibleItemFrames.getInvisibleItemFrameTag(), PersistentDataType.BYTE)) return;
+            if (!itemFrameInHand.getItemMeta().getPersistentDataContainer().has(regular_invisible_item_frame_tag, PersistentDataType.BYTE)) return;
             if (!player.hasPermission("craftableinvisibleitemframes.place")) {
                 event.setCancelled(true);
                 return;
@@ -94,14 +93,14 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
             } else {
                 itemFrameEntity.setVisible(false);
             }
-            itemFrameEntity.getPersistentDataContainer().set(CraftableInvisibleItemFrames.getInvisibleItemFrameTag(), PersistentDataType.BYTE, (byte) 1);
+            itemFrameEntity.getPersistentDataContainer().set(regular_invisible_item_frame_tag, PersistentDataType.BYTE, (byte) 1);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     private void onHangingBreak(HangingBreakEvent event) {
         if (event.getEntity() instanceof ItemFrame itemFrame) {
-            if (!itemFrame.getPersistentDataContainer().has(CraftableInvisibleItemFrames.getInvisibleItemFrameTag(), PersistentDataType.BYTE)) return;
+            if (!itemFrame.getPersistentDataContainer().has(regular_invisible_item_frame_tag, PersistentDataType.BYTE)) return;
             // Sets up a bounding box that checks for items near the frame and converts them
             DroppedFrameLocation droppedFrameLocation = new DroppedFrameLocation(itemFrame.getLocation());
             droppedFrames.add(droppedFrameLocation);
