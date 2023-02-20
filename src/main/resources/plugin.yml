@@ -1,0 +1,39 @@
+name: CraftableInvisibleItemFrames
+version: '${project.version}'
+main: me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames
+api-version: 1.19
+prefix: CraftInvisIFrames
+authors: [ xGinko ]
+description: Let players craft invisible itemframes by using invisibility potions and itemframes
+website: github.com/xGinko
+commands:
+  iframe:
+    permission: craftableinvisibleitemframes.cmd
+    description: Gives the player an invisible item frame
+    usage: /iframe
+permissions:
+  craftableinvisibleitemframes.craft:
+    description: Allows a player to craft an invisible itemframe
+    default: not op
+  craftableinvisibleitemframes.place:
+    description: Allows a player to place an invisible itemframe from the inventory
+    default: not op
+  craftableinvisibleitemframes.cmd.*:
+    description: Command permissions
+    default: op
+    children:
+      craftableinvisibleitemframes.cmd.reload: true
+      craftableinvisibleitemframes.cmd.version: true
+      craftableinvisibleitemframes.cmd.get: true
+      craftableinvisibleitemframes.cmd.setitem: true
+      craftableinvisibleitemframes.cmd.forcerecheck: true
+  craftableinvisibleitemframes.cmd.reload:
+    description: Permission to reload the plugin config
+  craftableinvisibleitemframes.cmd.version:
+    description: Permission to show the plugin version
+  craftableinvisibleitemframes.cmd.forcerecheck:
+    description: Permission to force a recheck of all itemframes
+  craftableinvisibleitemframes.cmd.get:
+    description: IDK yet
+  craftableinvisibleitemframes.cmd.setitem:
+    description: IDK yet
