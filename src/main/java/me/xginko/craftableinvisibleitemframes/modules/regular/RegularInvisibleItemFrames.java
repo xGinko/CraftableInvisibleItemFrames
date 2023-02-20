@@ -6,6 +6,8 @@ import me.xginko.craftableinvisibleitemframes.modules.CraftableInvisibleItemFram
 import me.xginko.craftableinvisibleitemframes.utils.DroppedFrameLocation;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
@@ -15,7 +17,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -28,13 +33,27 @@ import static me.xginko.craftableinvisibleitemframes.utils.Tools.getRandomNearby
 public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesModule, Listener {
 
     private final CraftableInvisibleItemFrames plugin;
+    private final NamespacedKey regular_invisible_item_frame_tag, regular_invisible_item_frame_recipe;
     private final boolean placed_item_frames_have_glowing_outline;
     private final HashSet<DroppedFrameLocation> droppedFrames = new HashSet<>();
+    private final ItemStack untitled_invisible_item_frame;
 
     public RegularInvisibleItemFrames() {
         this.plugin = CraftableInvisibleItemFrames.getInstance();
         Config config = CraftableInvisibleItemFrames.getConfiguration();
         this.placed_item_frames_have_glowing_outline = config.getBoolean("regular-invisible-itemframes.enable-glowing-outline-on-frames", true);
+
+        regular_invisible_item_frame_tag = new NamespacedKey(plugin, "invisible-itemframe");
+        regular_invisible_item_frame_recipe = new NamespacedKey(plugin, "invisible-itemframe-recipe");
+
+        this.untitled_invisible_item_frame = new ItemStack(Material.ITEM_FRAME, 1);
+        ItemMeta meta = untitled_invisible_item_frame.getItemMeta();
+        if (config.should_enchant_frame_items) {
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            meta.addEnchant(Enchantment.DURABILITY, 1, true);
+        }
+        meta.getPersistentDataContainer().set(regular_invisible_item_frame_tag, PersistentDataType.BYTE, (byte) 1);
+        untitled_invisible_item_frame.setItemMeta(meta);
     }
 
     @Override
@@ -83,9 +102,7 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
     private void onHangingBreak(HangingBreakEvent event) {
         if (event.getEntity() instanceof ItemFrame itemFrame) {
             if (!itemFrame.getPersistentDataContainer().has(CraftableInvisibleItemFrames.getInvisibleItemFrameTag(), PersistentDataType.BYTE)) return;
-            // This is the dumbest possible way to change the drops of an item frame
-            // Apparently, there's no api to change the dropped item
-            // So this sets up a bounding box that checks for items near the frame and converts them
+            // Sets up a bounding box that checks for items near the frame and converts them
             DroppedFrameLocation droppedFrameLocation = new DroppedFrameLocation(itemFrame.getLocation());
             droppedFrames.add(droppedFrameLocation);
             droppedFrameLocation.setRemoval((new BukkitRunnable() {
@@ -114,7 +131,7 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
         while(iter.hasNext()) {
             DroppedFrameLocation droppedFrameLocation = iter.next();
             if(droppedFrameLocation.isFrame(item)) {
-                ItemStack invisibleItemFrame = CraftableInvisibleItemFrames.generateInvisibleItemFrame();
+                ItemStack invisibleItemFrame = untitled_invisible_item_frame;
                 ItemMeta meta = invisibleItemFrame.getItemMeta();
                 meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', itemDisplayName));
                 invisibleItemFrame.setItemMeta(meta);

@@ -5,17 +5,8 @@ import me.xginko.craftableinvisibleitemframes.config.Config;
 import me.xginko.craftableinvisibleitemframes.config.LanguageCache;
 import me.xginko.craftableinvisibleitemframes.modules.CraftableInvisibleItemFramesModule;
 import org.bstats.bukkit.Metrics;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Recipe;
-import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
@@ -37,7 +28,6 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
     private static Config config;
     private static int minorMCVersion = Integer.MIN_VALUE;
     private static HashMap<String, LanguageCache> languageCacheMap;
-    private static NamespacedKey invisible_item_frame_tag, invisible_item_frame_recipe;
 
     @Override
     public void onEnable() {
@@ -96,9 +86,6 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
             }
         }
 
-        invisible_item_frame_tag = new NamespacedKey(this, "invisible");
-        invisible_item_frame_recipe = new NamespacedKey(this, "invisible-recipe");
-
         logger.info("Loading Config");
         reloadConfiguration();
 
@@ -113,25 +100,6 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-    }
-
-    public static ItemStack generateInvisibleItemFrame() {
-        ItemStack item = new ItemStack(Material.ITEM_FRAME, 1);
-        ItemMeta meta = item.getItemMeta();
-        if (config.should_enchant_frame_items) {
-            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            meta.addEnchant(Enchantment.DURABILITY, 1, true);
-        }
-        meta.getPersistentDataContainer().set(invisible_item_frame_tag, PersistentDataType.BYTE, (byte) 1);
-        item.setItemMeta(meta);
-        return item;
-    }
-
-    public static boolean isInvisibleItemFrameRecipe(Recipe recipe) {
-        if (recipe instanceof ShapedRecipe shapedRecipe) {
-            return shapedRecipe.getKey().equals(invisible_item_frame_recipe);
-        }
-        return false;
     }
 
     public void reloadCommands() {
@@ -197,14 +165,6 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
     private Set<String> getDefaultLanguageFiles(){
         Reflections reflections = new Reflections("lang", Scanners.Resources);
         return reflections.getResources(Pattern.compile("([a-z]{1,3}_[a-z]{1,3})(\\.yml)"));
-    }
-
-    public static NamespacedKey getInvisibleItemFrameTag() {
-        return invisible_item_frame_tag;
-    }
-
-    public static NamespacedKey getInvisibleItemFrameRecipe() {
-        return invisible_item_frame_recipe;
     }
 
     public static CraftableInvisibleItemFrames getInstance()  {
