@@ -107,14 +107,12 @@ public class Config {
     }
 
     public void addToRecipeCenterItems(ItemStack itemStack) {
-        if (itemStack == null || itemStack.getType().equals(Material.AIR)) return;
         recipe_center_items.add(itemStack);
         config.set("recipe-center-items", recipe_center_items.stream().distinct().collect(Collectors.toList()));
         saveConfig();
     }
 
     public void removeFromRecipeCenterItems(ItemStack itemStack) {
-        if (itemStack == null || itemStack.getType().equals(Material.AIR)) return;
         recipe_center_items.remove(itemStack);
         config.set("recipe-center-items", recipe_center_items.stream().distinct().collect(Collectors.toList()));
         saveConfig();

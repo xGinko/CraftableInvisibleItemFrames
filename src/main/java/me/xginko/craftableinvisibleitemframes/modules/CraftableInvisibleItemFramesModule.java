@@ -3,6 +3,7 @@ package me.xginko.craftableinvisibleitemframes.modules;
 import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
 import me.xginko.craftableinvisibleitemframes.modules.glowsquid.GlowsquidInvisibleItemFrames;
 import me.xginko.craftableinvisibleitemframes.modules.glowsquid.PlacedGlowsquidItemFrameGlowHandler;
+import me.xginko.craftableinvisibleitemframes.modules.regular.PlacedRegularItemFrameGlowHandler;
 import me.xginko.craftableinvisibleitemframes.modules.regular.RegularInvisibleItemFrames;
 import org.bukkit.event.HandlerList;
 
@@ -22,9 +23,10 @@ public interface CraftableInvisibleItemFramesModule {
         HandlerList.unregisterAll(plugin);
 
         modules.add(new RegularInvisibleItemFrames());
-        modules.add(new PlacedGlowsquidItemFrameGlowHandler());
+        modules.add(new PlacedRegularItemFrameGlowHandler());
         if (CraftableInvisibleItemFrames.getConfiguration().glowsquid_invisible_itemframes_are_enabled) {
             modules.add(new GlowsquidInvisibleItemFrames());
+            modules.add(new PlacedGlowsquidItemFrameGlowHandler());
         }
 
         for (CraftableInvisibleItemFramesModule module : modules) {

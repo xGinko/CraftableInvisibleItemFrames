@@ -4,6 +4,7 @@ import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
 import me.xginko.craftableinvisibleitemframes.commands.SubCommand;
 import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -30,11 +31,15 @@ public class RemoveItemSubCommand extends SubCommand {
         if (sender.hasPermission("craftableinvisibleitemframes.cmd.removeitem")) {
             if (sender instanceof Player player) {
                 ItemStack itemPlayerIsHolding = player.getInventory().getItemInMainHand();
-                if (CraftableInvisibleItemFrames.getConfiguration().recipe_center_items.contains(itemPlayerIsHolding)) {
-                    CraftableInvisibleItemFrames.getConfiguration().removeFromRecipeCenterItems(itemPlayerIsHolding);
-                    player.sendMessage(Component.text(ChatColor.GREEN + "Removed "+itemPlayerIsHolding.getAmount()+"x "+itemPlayerIsHolding.getType().name()+" from the recipe center items."));
+                if (!itemPlayerIsHolding.getType().equals(Material.AIR)) {
+                    if (CraftableInvisibleItemFrames.getConfiguration().recipe_center_items.contains(itemPlayerIsHolding)) {
+                        CraftableInvisibleItemFrames.getConfiguration().removeFromRecipeCenterItems(itemPlayerIsHolding);
+                        player.sendMessage(Component.text(ChatColor.GREEN + "Removed "+itemPlayerIsHolding.getAmount()+"x "+itemPlayerIsHolding.getType().name()+" from the recipe center items."));
+                    } else {
+                        player.sendMessage(Component.text(ChatColor.RED + "Item has not been added to the center recipes yet!"));
+                    }
                 } else {
-                    player.sendMessage(Component.text(ChatColor.RED + "Item has not been added to the center recipes yet!"));
+                    player.sendMessage(Component.text(ChatColor.RED + "You have to hold an item in your hand."));
                 }
             } else {
                 sender.sendMessage(Component.text(ChatColor.RED + "Command can't be executed from console."));

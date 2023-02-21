@@ -15,7 +15,7 @@ public class PlacedRegularItemFrameGlowHandler implements CraftableInvisibleItem
 
     private final CraftableInvisibleItemFrames plugin;
 
-    protected PlacedRegularItemFrameGlowHandler() {
+    public PlacedRegularItemFrameGlowHandler() {
         this.plugin = CraftableInvisibleItemFrames.getInstance();
     }
 
