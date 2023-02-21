@@ -35,8 +35,10 @@ public class IFrameCommand implements CraftableInvisibleItemFramesCommand, TabCo
 
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
-        if (args.length > 0) {
-            return tabcompleters;
+        if (command.getName().equalsIgnoreCase(label()) && args.length >= 1 && args.length <=2) {
+            if (args.length == 1) {
+                return tabcompleters;
+            }
         }
         return null;
     }

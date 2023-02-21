@@ -6,7 +6,7 @@
 
     <groupId>me.xGinko</groupId>
     <artifactId>CraftableInvisibleItemFrames</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>CraftableInvisibleItemFrames</name>
@@ -41,6 +41,7 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <minimizeJar>true</minimizeJar>
                         </configuration>
                     </execution>
                 </executions>
