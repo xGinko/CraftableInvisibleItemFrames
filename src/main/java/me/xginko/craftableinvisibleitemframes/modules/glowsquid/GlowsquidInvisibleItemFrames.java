@@ -92,10 +92,7 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
                     continue;
                 }
 
-                if(
-                        item.getItemMeta().getPersistentDataContainer().has(glowsquid_invisible_item_frame_tag, PersistentDataType.BYTE)
-                        && !item.getType().equals(Material.GLOW_ITEM_FRAME))
-                {
+                if(item.getItemMeta().getPersistentDataContainer().has(CraftableInvisibleItemFrames.getRegularInvisibleItemFrameTag(), PersistentDataType.BYTE)) {
                     if (foundFrame) return;
                     foundFrame = true;
                     continue;
@@ -128,9 +125,7 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
                 itemFrameInHand = player.getInventory().getItemInMainHand();
             } else if (player.getInventory().getItemInOffHand().getType().equals(Material.GLOW_ITEM_FRAME)) {
                 itemFrameInHand = player.getInventory().getItemInOffHand();
-            } else {
-                return;
-            }
+            } else return;
 
             // If the frame item has the invisible tag, make the placed item frame invisible
             if (!itemFrameInHand.getItemMeta().getPersistentDataContainer().has(glowsquid_invisible_item_frame_tag, PersistentDataType.BYTE)) return;

@@ -84,9 +84,7 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
                 itemFrameInHand = player.getInventory().getItemInMainHand();
             } else if (player.getInventory().getItemInOffHand().getType().equals(Material.ITEM_FRAME)) {
                 itemFrameInHand = player.getInventory().getItemInOffHand();
-            } else {
-                return;
-            }
+            } else return;
 
             // If the frame item has the invisible tag, make the placed item frame invisible
             if (!itemFrameInHand.getItemMeta().getPersistentDataContainer().has(regular_invisible_item_frame_tag, PersistentDataType.BYTE)) return;
