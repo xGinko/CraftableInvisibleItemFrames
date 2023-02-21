@@ -103,6 +103,9 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         regular_invisible_item_frame_recipe = new NamespacedKey(this, "invisible-itemframe-recipe");
         glowsquid_invisible_item_frame_tag = new NamespacedKey(this, "invisible-glowsquid-itemframe");
 
+        logger.info("Registering Recipe");
+        reloadRecipe();
+
         logger.info("Loading Language");
         reloadLang();
 
@@ -111,10 +114,6 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
 
         logger.info("Registering Commands");
         CraftableInvisibleItemFramesCommand.reloadCommands();
-
-        // logger.info("Loading metrics");
-        // new Metrics(this, 00000000);
-
     }
 
     @Override
@@ -196,27 +195,6 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         config.saveConfig();
     }
 
-    public static LanguageCache getLang(String lang) {
-        lang = lang.replace("-", "_");
-        if (config.auto_lang) {
-            return languageCacheMap.getOrDefault(lang, languageCacheMap.get(config.default_lang.toString().toLowerCase()));
-        } else {
-            return languageCacheMap.get(config.default_lang.toString().toLowerCase());
-        }
-    }
-
-    public static LanguageCache getLang(Locale locale) {
-        return getLang(locale.toString().toLowerCase());
-    }
-
-    public static LanguageCache getLang(CommandSender commandSender) {
-        if (commandSender instanceof Player player) {
-            return getLang(player.locale());
-        } else {
-            return getLang(config.default_lang);
-        }
-    }
-
     public void reloadLang() {
         languageCacheMap = new HashMap<>();
         try {
@@ -249,6 +227,27 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
     private Set<String> getDefaultLanguageFiles(){
         Reflections reflections = new Reflections("lang", Scanners.Resources);
         return reflections.getResources(Pattern.compile("([a-z]{1,3}_[a-z]{1,3})(\\.yml)"));
+    }
+
+    public static LanguageCache getLang(String lang) {
+        lang = lang.replace("-", "_");
+        if (config.auto_lang) {
+            return languageCacheMap.getOrDefault(lang, languageCacheMap.get(config.default_lang.toString().toLowerCase()));
+        } else {
+            return languageCacheMap.get(config.default_lang.toString().toLowerCase());
+        }
+    }
+
+    public static LanguageCache getLang(Locale locale) {
+        return getLang(locale.toString().toLowerCase());
+    }
+
+    public static LanguageCache getLang(CommandSender commandSender) {
+        if (commandSender instanceof Player player) {
+            return getLang(player.locale());
+        } else {
+            return getLang(config.default_lang);
+        }
     }
 
     public static CraftableInvisibleItemFrames getInstance()  {
