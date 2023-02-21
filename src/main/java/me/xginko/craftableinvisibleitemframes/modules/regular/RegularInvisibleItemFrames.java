@@ -112,7 +112,7 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
         String itemDisplayName;
         Player randomNearbyPlayer = getRandomNearbyPlayer(item.getLocation());
         if (randomNearbyPlayer == null) {
-            itemDisplayName = CraftableInvisibleItemFrames.getLang(CraftableInvisibleItemFrames.getConfiguration().default_lang).invisible_item_frame;
+            itemDisplayName = CraftableInvisibleItemFrames.getLang(config.default_lang).invisible_item_frame;
         } else {
             itemDisplayName = CraftableInvisibleItemFrames.getLang(randomNearbyPlayer.locale()).invisible_item_frame;
         }

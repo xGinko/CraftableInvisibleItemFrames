@@ -154,7 +154,7 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
         String itemDisplayName;
         Player randomNearbyPlayer = getRandomNearbyPlayer(item.getLocation());
         if (randomNearbyPlayer == null) {
-            itemDisplayName = CraftableInvisibleItemFrames.getLang(CraftableInvisibleItemFrames.getConfiguration().default_lang).glow_invisible_item_frame;
+            itemDisplayName = CraftableInvisibleItemFrames.getLang(config.default_lang).glow_invisible_item_frame;
         } else {
             itemDisplayName = CraftableInvisibleItemFrames.getLang(randomNearbyPlayer.locale()).glow_invisible_item_frame;
         }
