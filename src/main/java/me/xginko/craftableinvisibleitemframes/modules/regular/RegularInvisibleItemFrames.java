@@ -17,8 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -34,25 +33,34 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
     private final NamespacedKey regular_invisible_item_frame_tag, regular_invisible_item_frame_recipe;
     private final boolean placed_item_frames_have_glowing_outline;
     private final HashSet<DroppedFrameLocation> droppedFrames = new HashSet<>();
-    private final ItemStack untitled_invisible_item_frame;
+    private final ItemStack invisible_item_frame;
 
     public RegularInvisibleItemFrames() {
         this.plugin = CraftableInvisibleItemFrames.getInstance();
         Config config = CraftableInvisibleItemFrames.getConfiguration();
         this.placed_item_frames_have_glowing_outline = config.getBoolean("regular-invisible-itemframes.enable-glowing-outline-on-frames", true);
 
-        regular_invisible_item_frame_tag = new NamespacedKey(plugin, "invisible-itemframe");
-        regular_invisible_item_frame_recipe = new NamespacedKey(plugin, "invisible-itemframe-recipe");
+        regular_invisible_item_frame_tag = CraftableInvisibleItemFrames.getRegularInvisibleItemFrameTag();
+        regular_invisible_item_frame_recipe = CraftableInvisibleItemFrames.getRegularInvisibleItemFrameRecipeKey();
 
-        ItemStack invisible_item_frame = new ItemStack(Material.ITEM_FRAME, 1);
-        ItemMeta meta = invisible_item_frame.getItemMeta();
+        ItemStack invisible_frame = new ItemStack(Material.ITEM_FRAME, 1);
+        ItemMeta meta = invisible_frame.getItemMeta();
         if (config.should_enchant_frame_items) {
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             meta.addEnchant(Enchantment.DURABILITY, 1, true);
         }
+        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', CraftableInvisibleItemFrames.getLang(config.default_lang).invisible_item_frame));
         meta.getPersistentDataContainer().set(regular_invisible_item_frame_tag, PersistentDataType.BYTE, (byte) 1);
-        invisible_item_frame.setItemMeta(meta);
-        this.untitled_invisible_item_frame = invisible_item_frame;
+        invisible_frame.setItemMeta(meta);
+        this.invisible_item_frame = invisible_frame;
+
+        // register recipe
+        invisible_frame.setAmount(8);
+        ShapedRecipe invisRecipe = new ShapedRecipe(regular_invisible_item_frame_recipe, invisible_frame);
+        invisRecipe.shape("FFF", "FPF", "FFF");
+        invisRecipe.setIngredient('F', Material.ITEM_FRAME);
+        invisRecipe.setIngredient('P', new RecipeChoice.ExactChoice(config.recipe_center_items));
+        plugin.getServer().addRecipe(invisRecipe);
     }
 
     @Override
@@ -130,7 +138,7 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
         while(iter.hasNext()) {
             DroppedFrameLocation droppedFrameLocation = iter.next();
             if(droppedFrameLocation.isFrame(item)) {
-                ItemStack invisibleItemFrame = untitled_invisible_item_frame;
+                ItemStack invisibleItemFrame = invisible_item_frame;
                 ItemMeta meta = invisibleItemFrame.getItemMeta();
                 meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', itemDisplayName));
                 invisibleItemFrame.setItemMeta(meta);
@@ -143,5 +151,9 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
                 break;
             }
         }
+    }
+
+    private boolean isRegularInvisibleRecipe(Recipe recipe) {
+        return recipe instanceof ShapedRecipe shapedRecipe && shapedRecipe.getKey().equals(regular_invisible_item_frame_recipe);
     }
 }

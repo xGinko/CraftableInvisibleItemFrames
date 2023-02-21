@@ -11,10 +11,7 @@ import org.bukkit.potion.PotionType;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -27,7 +24,7 @@ public class Config {
     public final Locale default_lang;
     public final boolean auto_lang, can_do_glowsquid_frames, should_enchant_frame_items;
     public final double config_version;
-    public final HashSet<ItemStack> recipe_center_items = new HashSet<>();
+    public final List<ItemStack> recipe_center_items;
 
     public Config() {
         configFile = new File(CraftableInvisibleItemFrames.getInstance().getDataFolder(), "config.yml");
@@ -55,7 +52,7 @@ public class Config {
 
         // Recipe center items
         config.addSection("Recipe Center Items");
-        HashSet<ItemStack> defaults = new HashSet<>();
+        List<ItemStack> defaults = new ArrayList<>();
         // Short invis
         ItemStack short_lingering_invisibility = new ItemStack(Material.LINGERING_POTION, 1);
         PotionMeta short_lingering_invis_meta = (PotionMeta) short_lingering_invisibility.getItemMeta();
@@ -68,11 +65,7 @@ public class Config {
         long_lingering_invis_meta.setBasePotionData(new PotionData(PotionType.INVISIBILITY, true, false));
         long_lingering_invisibility.setItemMeta(long_lingering_invis_meta);
         defaults.add(long_lingering_invisibility);
-        recipe_center_items.addAll(
-                config.getList("recipe-center-items", defaults.stream().distinct().collect(Collectors.toList()))
-        );
-
-
+        this.recipe_center_items = config.getList("recipe-center-items", defaults.stream().distinct().collect(Collectors.toList()));
     }
 
     private void createFiles() {

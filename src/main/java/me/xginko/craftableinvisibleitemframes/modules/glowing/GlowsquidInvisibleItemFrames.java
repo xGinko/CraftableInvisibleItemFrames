@@ -18,9 +18,7 @@ import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -36,25 +34,34 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
     private final NamespacedKey glowsquid_invisible_item_frame_tag, glowsquid_invisible_item_frame_recipe;
     private final boolean placed_item_frames_have_glowing_outline;
     private final HashSet<DroppedFrameLocation> droppedFrames = new HashSet<>();
-    private final ItemStack untitled_invisible_glowsquid_item_frame;
+    private final ItemStack invisible_glowsquid_item_frame;
 
     public GlowsquidInvisibleItemFrames() {
         this.plugin = CraftableInvisibleItemFrames.getInstance();
         Config config = CraftableInvisibleItemFrames.getConfiguration();
         this.placed_item_frames_have_glowing_outline = config.getBoolean("glowsquid-invisible-itemframes.enable-glowing-outline-on-frames", true);
 
-        this.glowsquid_invisible_item_frame_tag = new NamespacedKey(plugin, "invisible-glowsquid-itemframe");
-        this.glowsquid_invisible_item_frame_recipe = new NamespacedKey(plugin, "invisible-glowsquid-itemframe-recipe");
+        this.glowsquid_invisible_item_frame_tag = CraftableInvisibleItemFrames.getGlowsquidInvisibleItemFrameTag();
+        this.glowsquid_invisible_item_frame_recipe = CraftableInvisibleItemFrames.getGlowsquidInvisibleItemFrameRecipeKey();
 
-        ItemStack invisible_glowsquid_item_frame = new ItemStack(Material.GLOW_ITEM_FRAME, 1);
-        ItemMeta meta = invisible_glowsquid_item_frame.getItemMeta();
+        ItemStack invisible_glowsquid_frame = new ItemStack(Material.GLOW_ITEM_FRAME, 1);
+        ItemMeta meta = invisible_glowsquid_frame.getItemMeta();
         if (config.should_enchant_frame_items) {
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             meta.addEnchant(Enchantment.DURABILITY, 1, true);
         }
+        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', CraftableInvisibleItemFrames.getLang(config.default_lang).glow_invisible_item_frame));
         meta.getPersistentDataContainer().set(glowsquid_invisible_item_frame_tag, PersistentDataType.BYTE, (byte) 1);
-        invisible_glowsquid_item_frame.setItemMeta(meta);
-        this.untitled_invisible_glowsquid_item_frame = invisible_glowsquid_item_frame;
+        invisible_glowsquid_frame.setItemMeta(meta);
+        this.invisible_glowsquid_item_frame = invisible_glowsquid_frame;
+
+        // register recipe
+        invisible_glowsquid_frame.setAmount(8);
+        ShapedRecipe invisRecipe = new ShapedRecipe(glowsquid_invisible_item_frame_recipe, invisible_glowsquid_frame);
+        invisRecipe.shape("FFF", "FPF", "FFF");
+        invisRecipe.setIngredient('F', Material.GLOW_ITEM_FRAME);
+        invisRecipe.setIngredient('P', new RecipeChoice.ExactChoice(config.recipe_center_items));
+        plugin.getServer().addRecipe(invisRecipe);
     }
 
     @Override
@@ -69,46 +76,44 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     private void onCraft(PrepareItemCraftEvent event) {
-        if (event.getRecipe() instanceof ShapedRecipe shapedRecipe) {
-            if (shapedRecipe.getKey().equals(glowsquid_invisible_item_frame_recipe)) {
-                Player player = (Player) event.getView().getPlayer();
-                if (player.hasPermission("craftableinvisibleitemframes.craft")) {
-                    boolean foundFrame = false;
-                    boolean foundInkSac = false;
-                    for (ItemStack item : event.getInventory().getMatrix()) {
-                        if (item == null || item.getType().equals(Material.AIR)) continue;
+        if (!isGlowsquidInvisibleRecipe(event.getRecipe())) return;
 
-                        if(item.getType().equals(Material.GLOW_INK_SAC)) {
-                            if (foundInkSac) return;
-                            foundInkSac = true;
-                            continue;
-                        }
+        Player player = (Player) event.getView().getPlayer();
+        if (player.hasPermission("craftableinvisibleitemframes.craft")) {
+            boolean foundFrame = false;
+            boolean foundInkSac = false;
+            for (ItemStack item : event.getInventory().getMatrix()) {
+                if (item == null || item.getType().equals(Material.AIR)) continue;
 
-                        if(
-                                item.getItemMeta().getPersistentDataContainer().has(glowsquid_invisible_item_frame_tag, PersistentDataType.BYTE)
-                                && !item.getType().equals(Material.GLOW_ITEM_FRAME))
-                        {
-                            if (foundFrame) return;
-                            foundFrame = true;
-                            continue;
-                        }
-
-                        // Item isn't what we're looking for
-                        return;
-                    }
-
-                    if(foundFrame && foundInkSac) {
-                        ItemStack invisibleGlowingItem = untitled_invisible_glowsquid_item_frame;
-                        ItemMeta meta = invisibleGlowingItem.getItemMeta();
-                        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', CraftableInvisibleItemFrames.getLang(player.locale()).glow_invisible_item_frame));
-                        invisibleGlowingItem.setItemMeta(meta);
-
-                        event.getInventory().setResult(invisibleGlowingItem);
-                    }
-                } else {
-                    event.getInventory().setResult(null);
+                if(item.getType().equals(Material.GLOW_INK_SAC)) {
+                    if (foundInkSac) return;
+                    foundInkSac = true;
+                    continue;
                 }
+
+                if(
+                        item.getItemMeta().getPersistentDataContainer().has(glowsquid_invisible_item_frame_tag, PersistentDataType.BYTE)
+                        && !item.getType().equals(Material.GLOW_ITEM_FRAME))
+                {
+                    if (foundFrame) return;
+                    foundFrame = true;
+                    continue;
+                }
+
+                // Item isn't what we're looking for
+                return;
             }
+
+            if(foundFrame && foundInkSac) {
+                ItemStack invisibleGlowingItem = invisible_glowsquid_item_frame;
+                ItemMeta meta = invisibleGlowingItem.getItemMeta();
+                meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', CraftableInvisibleItemFrames.getLang(player.locale()).glow_invisible_item_frame));
+                invisibleGlowingItem.setItemMeta(meta);
+
+                event.getInventory().setResult(invisibleGlowingItem);
+            }
+        } else {
+            event.getInventory().setResult(null);
         }
     }
 
@@ -176,7 +181,7 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
         while (iterator.hasNext()) {
             DroppedFrameLocation droppedFrameLocation = iterator.next();
             if(droppedFrameLocation.isFrame(item)) {
-                ItemStack invisibleItemFrame = untitled_invisible_glowsquid_item_frame;
+                ItemStack invisibleItemFrame = invisible_glowsquid_item_frame;
                 ItemMeta meta = invisibleItemFrame.getItemMeta();
                 meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', itemDisplayName));
                 invisibleItemFrame.setItemMeta(meta);
@@ -190,4 +195,7 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
         }
     }
 
+    private boolean isGlowsquidInvisibleRecipe(Recipe recipe) {
+        return recipe instanceof ShapedRecipe shapedRecipe && shapedRecipe.getKey().equals(glowsquid_invisible_item_frame_recipe);
+    }
 }

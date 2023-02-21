@@ -5,8 +5,11 @@ import me.xginko.craftableinvisibleitemframes.config.Config;
 import me.xginko.craftableinvisibleitemframes.config.LanguageCache;
 import me.xginko.craftableinvisibleitemframes.modules.CraftableInvisibleItemFramesModule;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
@@ -15,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -27,6 +31,8 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
     private static Logger logger;
     private static Config config;
     private static int minorMCVersion = Integer.MIN_VALUE;
+    private static NamespacedKey regular_invisible_item_frame_tag, regular_invisible_item_frame_recipe,
+                                glowsquid_invisible_item_frame_tag, glowsquid_invisible_item_frame_recipe;
     private static HashMap<String, LanguageCache> languageCacheMap;
 
     @Override
@@ -86,6 +92,12 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
             }
         }
 
+        logger.info("Registering NamespacedKeys");
+        regular_invisible_item_frame_tag = new NamespacedKey(this, "invisible-itemframe");
+        regular_invisible_item_frame_recipe = new NamespacedKey(this, "invisible-itemframe-recipe");
+        glowsquid_invisible_item_frame_tag = new NamespacedKey(this, "invisible-glowsquid-itemframe");
+        glowsquid_invisible_item_frame_recipe = new NamespacedKey(this, "invisible-glowsquid-itemframe-recipe");
+
         logger.info("Loading Config");
         reloadConfiguration();
 
@@ -95,11 +107,33 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         logger.info("Loading metrics");
         new Metrics(this, 00000000);
 
+
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        removeRecipes();
+    }
+
+    public void removeRecipes() {
+        Iterator<Recipe> iter = getServer().recipeIterator();
+        while(iter.hasNext()) {
+            Recipe recipe = iter.next();
+            if (recipe instanceof ShapedRecipe shapedRecipe) {
+                if (config.can_do_glowsquid_frames) {
+                    if (
+                            shapedRecipe.getKey().equals(regular_invisible_item_frame_recipe)
+                            || shapedRecipe.getKey().equals(glowsquid_invisible_item_frame_recipe)
+                    ) {
+                        iter.remove();
+                    }
+                } else {
+                    if (shapedRecipe.getKey().equals(regular_invisible_item_frame_recipe)) {
+                        iter.remove();
+                    }
+                }
+            }
+        }
     }
 
     public void reloadCommands() {
@@ -107,6 +141,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
     }
 
     public void reloadConfiguration() {
+        removeRecipes();
         config = new Config();
         CraftableInvisibleItemFramesModule.reloadModules();
         config.saveConfig();
@@ -181,5 +216,21 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
 
     public static int getMCVersion() {
         return minorMCVersion;
+    }
+
+    public static NamespacedKey getRegularInvisibleItemFrameTag() {
+        return regular_invisible_item_frame_tag;
+    }
+
+    public static NamespacedKey getRegularInvisibleItemFrameRecipeKey() {
+        return regular_invisible_item_frame_recipe;
+    }
+
+    public static NamespacedKey getGlowsquidInvisibleItemFrameTag() {
+        return glowsquid_invisible_item_frame_tag;
+    }
+
+    public static NamespacedKey getGlowsquidInvisibleItemFrameRecipeKey() {
+        return glowsquid_invisible_item_frame_recipe;
     }
 }
