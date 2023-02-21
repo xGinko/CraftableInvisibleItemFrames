@@ -76,12 +76,6 @@
             <version>1.19.3-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        <!-- Configuration Master -->
-        <dependency>
-            <groupId>com.github.thatsmusic99</groupId>
-            <artifactId>ConfigurationMaster-API</artifactId>
-            <version>v2.0.0-BETA-3</version>
-        </dependency>
         <!-- Reflections -->
         <dependency>
             <groupId>org.reflections</groupId>
