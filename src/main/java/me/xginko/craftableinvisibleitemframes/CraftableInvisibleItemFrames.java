@@ -116,20 +116,20 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
     }
 
     public void removeRecipes() {
-        Iterator<Recipe> iter = getServer().recipeIterator();
-        while(iter.hasNext()) {
-            Recipe recipe = iter.next();
+        Iterator<Recipe> recipeIterator = getServer().recipeIterator();
+        while(recipeIterator.hasNext()) {
+            Recipe recipe = recipeIterator.next();
             if (recipe instanceof ShapedRecipe shapedRecipe) {
                 if (config.can_do_glowsquid_frames) {
                     if (
                             shapedRecipe.getKey().equals(regular_invisible_item_frame_recipe)
                             || shapedRecipe.getKey().equals(glowsquid_invisible_item_frame_recipe)
                     ) {
-                        iter.remove();
+                        recipeIterator.remove();
                     }
                 } else {
                     if (shapedRecipe.getKey().equals(regular_invisible_item_frame_recipe)) {
-                        iter.remove();
+                        recipeIterator.remove();
                     }
                 }
             }
