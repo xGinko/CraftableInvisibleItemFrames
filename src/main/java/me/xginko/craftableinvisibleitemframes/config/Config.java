@@ -122,6 +122,6 @@ public class Config {
     private void setRecipeCenterItems(List<ItemStack> recipeItems) {
         config.set("recipe-center-items", recipeItems.stream().distinct().collect(Collectors.toList()));
         plugin.saveConfig();
-        plugin.reloadPlugin();
+        plugin.reloadRecipe();
     }
 }

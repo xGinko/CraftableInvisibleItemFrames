@@ -4,15 +4,18 @@ import me.xginko.craftableinvisibleitemframes.commands.CraftableInvisibleItemFra
 import me.xginko.craftableinvisibleitemframes.config.Config;
 import me.xginko.craftableinvisibleitemframes.config.LanguageCache;
 import me.xginko.craftableinvisibleitemframes.modules.CraftableInvisibleItemFramesModule;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Recipe;
-import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.*;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
@@ -160,8 +163,28 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         }
     }
 
+    public void reloadRecipe() {
+        removeRecipe(regular_invisible_item_frame_recipe);
+        ItemStack invisible_regular_item_frame = new ItemStack(Material.ITEM_FRAME, 1);
+        ItemMeta meta = invisible_regular_item_frame.getItemMeta();
+        if (config.regular_item_frames_should_be_enchanted) {
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            meta.addEnchant(Enchantment.DURABILITY, 1, true);
+        }
+        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', getLang(config.default_lang).invisible_item_frame));
+        meta.getPersistentDataContainer().set(regular_invisible_item_frame_tag, PersistentDataType.BYTE, (byte) 1);
+        invisible_regular_item_frame.setItemMeta(meta);
+        invisible_regular_item_frame.setAmount(8);
+        ShapedRecipe invisRecipe = new ShapedRecipe(regular_invisible_item_frame_recipe, invisible_regular_item_frame);
+        invisRecipe.shape("FFF", "FPF", "FFF");
+        invisRecipe.setIngredient('F', Material.ITEM_FRAME);
+        invisRecipe.setIngredient('P', new RecipeChoice.ExactChoice(config.recipe_center_items));
+        getServer().addRecipe(invisRecipe);
+    }
+
     public void reloadPlugin() {
         reloadLang();
+        reloadRecipe();
         reloadConfiguration();
         CraftableInvisibleItemFramesCommand.reloadCommands();
         reApplyOutlineGlowingSettingsToAllLoadedInvisibleItemFrames();

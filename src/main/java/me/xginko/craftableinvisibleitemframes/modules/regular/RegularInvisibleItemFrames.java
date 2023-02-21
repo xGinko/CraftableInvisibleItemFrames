@@ -18,8 +18,6 @@ import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.RecipeChoice;
-import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -50,15 +48,6 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
         meta.getPersistentDataContainer().set(plugin.regular_invisible_item_frame_tag, PersistentDataType.BYTE, (byte) 1);
         invisible_regular_item_frame.setItemMeta(meta);
         this.template_invisible_regular_item_frame = invisible_regular_item_frame;
-
-        // remove any old recipe and register new recipe
-        plugin.removeRecipe(plugin.regular_invisible_item_frame_recipe);
-        invisible_regular_item_frame.setAmount(8);
-        ShapedRecipe invisRecipe = new ShapedRecipe(plugin.regular_invisible_item_frame_recipe, invisible_regular_item_frame);
-        invisRecipe.shape("FFF", "FPF", "FFF");
-        invisRecipe.setIngredient('F', Material.ITEM_FRAME);
-        invisRecipe.setIngredient('P', new RecipeChoice.ExactChoice(config.recipe_center_items));
-        plugin.getServer().addRecipe(invisRecipe);
     }
 
     @Override
