@@ -103,14 +103,14 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         regular_invisible_item_frame_recipe = new NamespacedKey(this, "invisible-itemframe-recipe");
         glowsquid_invisible_item_frame_tag = new NamespacedKey(this, "invisible-glowsquid-itemframe");
 
-        logger.info("Registering Recipe");
-        reloadRecipe();
-
         logger.info("Loading Language");
         reloadLang();
 
         logger.info("Loading Config");
         reloadConfiguration();
+
+        logger.info("Registering Recipe");
+        reloadRecipe();
 
         logger.info("Registering Commands");
         CraftableInvisibleItemFramesCommand.reloadCommands();
@@ -181,8 +181,8 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
 
     public void reloadPlugin() {
         reloadLang();
-        reloadRecipe();
         reloadConfiguration();
+        reloadRecipe();
         CraftableInvisibleItemFramesCommand.reloadCommands();
         reapplyOutlineSettingsToAllLoadedInvisibleFrames();
     }
