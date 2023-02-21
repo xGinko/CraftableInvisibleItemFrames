@@ -21,6 +21,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -54,7 +55,7 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
         ShapedRecipe invisRecipe = new ShapedRecipe(plugin.regular_invisible_item_frame_recipe, invisible_regular_item_frame);
         invisRecipe.shape("FFF", "FPF", "FFF");
         invisRecipe.setIngredient('F', Material.ITEM_FRAME);
-        invisRecipe.setIngredient('P', new RecipeChoice.ExactChoice(config.recipe_center_items));
+        invisRecipe.setIngredient('P', new RecipeChoice.ExactChoice(new ArrayList<>(config.recipe_center_items)));
         plugin.getServer().addRecipe(invisRecipe);
     }
 
@@ -142,10 +143,6 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
                 break;
             }
         }
-    }
-
-    private boolean isInvisibleRegularFrameRecipe(Recipe recipe) {
-        return recipe instanceof ShapedRecipe shapedRecipe && shapedRecipe.getKey().equals(plugin.regular_invisible_item_frame_recipe);
     }
 
     private ItemStack getInvisibleRegularItemFrame() {

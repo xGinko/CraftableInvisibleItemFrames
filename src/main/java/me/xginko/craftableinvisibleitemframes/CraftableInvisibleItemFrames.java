@@ -35,7 +35,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
     private static Config config;
     private static int minorMCVersion = Integer.MIN_VALUE;
     public NamespacedKey regular_invisible_item_frame_tag, regular_invisible_item_frame_recipe,
-            glowsquid_invisible_item_frame_tag, glowsquid_invisible_item_frame_recipe;
+            glowsquid_invisible_item_frame_tag;
     private static HashMap<String, LanguageCache> languageCacheMap;
 
     @Override
@@ -99,7 +99,6 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         regular_invisible_item_frame_tag = new NamespacedKey(this, "invisible-itemframe");
         regular_invisible_item_frame_recipe = new NamespacedKey(this, "invisible-itemframe-recipe");
         glowsquid_invisible_item_frame_tag = new NamespacedKey(this, "invisible-glowsquid-itemframe");
-        glowsquid_invisible_item_frame_recipe = new NamespacedKey(this, "invisible-glowsquid-itemframe-recipe");
 
         logger.info("Loading Config");
         reloadConfiguration();
@@ -115,7 +114,6 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
     @Override
     public void onDisable() {
         removeRecipe(regular_invisible_item_frame_recipe);
-        removeRecipe(glowsquid_invisible_item_frame_recipe);
     }
 
     public void removeRecipe(NamespacedKey recipeKey) {
@@ -131,7 +129,6 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         }
     }
 
-    // Apply outline glowing settings to all loaded item frames
     public void reApplyOutlineGlowingSettingsToAllLoadedInvisibleItemFrames() {
         for (World world : getServer().getWorlds()) {
             for (Entity entity : world.getEntities()) {

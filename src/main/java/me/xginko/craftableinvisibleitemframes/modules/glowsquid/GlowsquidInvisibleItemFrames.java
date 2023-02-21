@@ -48,15 +48,6 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
         meta.getPersistentDataContainer().set(plugin.glowsquid_invisible_item_frame_tag, PersistentDataType.BYTE, (byte) 1);
         invisible_glowsquid_frame.setItemMeta(meta);
         this.template_invisible_glowsquid_item_frame = invisible_glowsquid_frame;
-
-        // remove any old recipe and register new recipe
-        plugin.removeRecipe(plugin.glowsquid_invisible_item_frame_recipe);
-        invisible_glowsquid_frame.setAmount(8);
-        ShapedRecipe invisRecipe = new ShapedRecipe(plugin.glowsquid_invisible_item_frame_recipe, invisible_glowsquid_frame);
-        invisRecipe.shape("FFF", "FPF", "FFF");
-        invisRecipe.setIngredient('F', Material.GLOW_ITEM_FRAME);
-        invisRecipe.setIngredient('P', new RecipeChoice.ExactChoice(config.recipe_center_items));
-        plugin.getServer().addRecipe(invisRecipe);
     }
 
     @Override
@@ -71,7 +62,7 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     private void onCraft(PrepareItemCraftEvent event) {
-        if (!isInvisibleGlowsquidFrameRecipe(event.getRecipe())) return;
+        if (isInvisibleRegularFrameRecipe(event.getRecipe())) return;
 
         Player player = (Player) event.getView().getPlayer();
         if (player.hasPermission("craftableinvisibleitemframes.craft")) {
@@ -186,8 +177,8 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
         }
     }
 
-    private boolean isInvisibleGlowsquidFrameRecipe(Recipe recipe) {
-        return recipe instanceof ShapedRecipe shapedRecipe && shapedRecipe.getKey().equals(plugin.glowsquid_invisible_item_frame_recipe);
+    private boolean isInvisibleRegularFrameRecipe(Recipe recipe) {
+        return recipe instanceof ShapedRecipe shapedRecipe && shapedRecipe.getKey().equals(plugin.regular_invisible_item_frame_recipe);
     }
 
     private ItemStack getInvisibleGlowsquidItemFrame() {

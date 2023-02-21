@@ -25,7 +25,7 @@ public class Config {
     public final boolean auto_lang, regular_invisible_itemframes_are_enabled, regular_placed_item_frames_have_glowing_outlines, regular_item_frames_should_be_enchanted,
                 glowsquid_invisible_itemframes_are_enabled, glowsquid_placed_item_frames_have_glowing_outlines, glowsquid_item_frames_should_be_enchanted;
     public final double config_version;
-    public final List<ItemStack> recipe_center_items;
+    public final HashSet<ItemStack> recipe_center_items = new HashSet<>();
 
     public Config() {
         configFile = new File(CraftableInvisibleItemFrames.getInstance().getDataFolder(), "config.yml");
@@ -71,7 +71,9 @@ public class Config {
         long_lingering_invis_meta.setBasePotionData(new PotionData(PotionType.INVISIBILITY, true, false));
         long_lingering_invisibility.setItemMeta(long_lingering_invis_meta);
         defaults.add(long_lingering_invisibility);
-        this.recipe_center_items = config.getList("recipe-center-items", defaults.stream().distinct().collect(Collectors.toList()));
+        this.recipe_center_items.addAll(
+                config.getList("recipe-center-items", defaults.stream().distinct().collect(Collectors.toList()))
+        );
     }
 
     private void createFiles() {
