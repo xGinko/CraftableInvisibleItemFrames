@@ -134,7 +134,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         }
     }
 
-    public void reApplyOutlineGlowingSettingsToAllLoadedInvisibleItemFrames() {
+    public void reapplyOutlineSettingsToAllLoadedInvisibleFrames() {
         for (World world : getServer().getWorlds()) {
             for (Entity entity : world.getEntities()) {
                 if (entity instanceof ItemFrame itemFrame) {
@@ -146,9 +146,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
                             itemFrame.setGlowing(false);
                             itemFrame.setVisible(false);
                         }
-                    }
-                    else
-                    if (itemFrame.getPersistentDataContainer().has(regular_invisible_item_frame_tag)) {
+                    } else if (itemFrame.getPersistentDataContainer().has(regular_invisible_item_frame_tag)) {
                         if (itemFrame.getItem().getType().equals(Material.AIR) && config.regular_placed_item_frames_have_glowing_outlines) {
                             itemFrame.setGlowing(true);
                             itemFrame.setVisible(true);
@@ -186,7 +184,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         reloadRecipe();
         reloadConfiguration();
         CraftableInvisibleItemFramesCommand.reloadCommands();
-        reApplyOutlineGlowingSettingsToAllLoadedInvisibleItemFrames();
+        reapplyOutlineSettingsToAllLoadedInvisibleFrames();
     }
 
     public void reloadConfiguration() {
