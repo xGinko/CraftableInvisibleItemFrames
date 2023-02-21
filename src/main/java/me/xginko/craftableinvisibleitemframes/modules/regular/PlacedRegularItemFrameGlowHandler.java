@@ -1,7 +1,9 @@
-package me.xginko.craftableinvisibleitemframes.modules;
+package me.xginko.craftableinvisibleitemframes.modules.regular;
 
 import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
+import me.xginko.craftableinvisibleitemframes.modules.CraftableInvisibleItemFramesModule;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -10,12 +12,14 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.persistence.PersistentDataType;
 
-public class PlacedItemFrameGlowEnabler implements CraftableInvisibleItemFramesModule, Listener {
+public class PlacedRegularItemFrameGlowHandler implements CraftableInvisibleItemFramesModule, Listener {
 
     private final CraftableInvisibleItemFrames plugin;
+    private final NamespacedKey regular_invisible_item_frame_tag;
 
-    protected PlacedItemFrameGlowEnabler() {
+    protected PlacedRegularItemFrameGlowHandler() {
         this.plugin = CraftableInvisibleItemFrames.getInstance();
+        this.regular_invisible_item_frame_tag = CraftableInvisibleItemFrames.getRegularInvisibleItemFrameTag();
     }
 
     @Override
@@ -25,15 +29,17 @@ public class PlacedItemFrameGlowEnabler implements CraftableInvisibleItemFramesM
 
     @Override
     public boolean shouldEnable() {
-        return false;
+        return CraftableInvisibleItemFrames.getConfiguration().getBoolean("regular-invisible-itemframes.glowing-outlines", true);
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         if (event.getRightClicked() instanceof ItemFrame itemFrame) {
-            if (itemFrame.getPersistentDataContainer().has(CraftableInvisibleItemFrames.getInvisibleItemFrameTag(), PersistentDataType.BYTE)) {
+            if (
+                    itemFrame.getPersistentDataContainer().has(regular_invisible_item_frame_tag, PersistentDataType.BYTE)
+            ) {
                 plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-                    if(!itemFrame.getItem().getType().equals(Material.AIR)) {
+                    if (!itemFrame.getItem().getType().equals(Material.AIR)) {
                         itemFrame.setGlowing(false);
                         itemFrame.setVisible(false);
                     }
@@ -45,9 +51,11 @@ public class PlacedItemFrameGlowEnabler implements CraftableInvisibleItemFramesM
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (event.getEntity() instanceof ItemFrame itemFrame) {
-            if (itemFrame.getPersistentDataContainer().has(CraftableInvisibleItemFrames.getInvisibleItemFrameTag(), PersistentDataType.BYTE)) {
+            if (
+                    itemFrame.getPersistentDataContainer().has(regular_invisible_item_frame_tag, PersistentDataType.BYTE)
+            ) {
                 plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-                    if(itemFrame.getItem().getType().equals(Material.AIR)) {
+                    if (itemFrame.getItem().getType().equals(Material.AIR)) {
                         itemFrame.setGlowing(true);
                         itemFrame.setVisible(true);
                     }

@@ -117,7 +117,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
 
     public void removeRecipes() {
         Iterator<Recipe> recipeIterator = getServer().recipeIterator();
-        while(recipeIterator.hasNext()) {
+        while (recipeIterator.hasNext()) {
             Recipe recipe = recipeIterator.next();
             if (recipe instanceof ShapedRecipe shapedRecipe) {
                 if (config.can_do_glowsquid_frames) {

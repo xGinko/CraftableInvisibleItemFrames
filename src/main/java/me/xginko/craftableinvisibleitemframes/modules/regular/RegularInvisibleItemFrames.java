@@ -31,32 +31,33 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
 
     private final CraftableInvisibleItemFrames plugin;
     private final NamespacedKey regular_invisible_item_frame_tag, regular_invisible_item_frame_recipe;
-    private final boolean placed_item_frames_have_glowing_outline;
+    private final boolean placed_item_frames_have_glowing_outline, should_enchant_frame_items;
     private final HashSet<DroppedFrameLocation> droppedFrames = new HashSet<>();
-    private final ItemStack invisible_item_frame;
+    private final ItemStack template_invisible_regular_item_frame;
 
     public RegularInvisibleItemFrames() {
         this.plugin = CraftableInvisibleItemFrames.getInstance();
+        this.regular_invisible_item_frame_tag = CraftableInvisibleItemFrames.getRegularInvisibleItemFrameTag();
+        this.regular_invisible_item_frame_recipe = CraftableInvisibleItemFrames.getRegularInvisibleItemFrameRecipeKey();
+
         Config config = CraftableInvisibleItemFrames.getConfiguration();
-        this.placed_item_frames_have_glowing_outline = config.getBoolean("regular-invisible-itemframes.enable-glowing-outline-on-frames", true);
+        this.placed_item_frames_have_glowing_outline = config.getBoolean("regular-invisible-itemframes.glowing-outlines", true);
+        this.should_enchant_frame_items = config.getBoolean("regular-invisible-itemframes.enchant-frame-items", true);
 
-        regular_invisible_item_frame_tag = CraftableInvisibleItemFrames.getRegularInvisibleItemFrameTag();
-        regular_invisible_item_frame_recipe = CraftableInvisibleItemFrames.getRegularInvisibleItemFrameRecipeKey();
-
-        ItemStack invisible_frame = new ItemStack(Material.ITEM_FRAME, 1);
-        ItemMeta meta = invisible_frame.getItemMeta();
-        if (config.should_enchant_frame_items) {
+        ItemStack invisible_regular_item_frame = new ItemStack(Material.ITEM_FRAME, 1);
+        ItemMeta meta = invisible_regular_item_frame.getItemMeta();
+        if (should_enchant_frame_items) {
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             meta.addEnchant(Enchantment.DURABILITY, 1, true);
         }
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', CraftableInvisibleItemFrames.getLang(config.default_lang).invisible_item_frame));
         meta.getPersistentDataContainer().set(regular_invisible_item_frame_tag, PersistentDataType.BYTE, (byte) 1);
-        invisible_frame.setItemMeta(meta);
-        this.invisible_item_frame = invisible_frame;
+        invisible_regular_item_frame.setItemMeta(meta);
+        this.template_invisible_regular_item_frame = invisible_regular_item_frame;
 
         // register recipe
-        invisible_frame.setAmount(8);
-        ShapedRecipe invisRecipe = new ShapedRecipe(regular_invisible_item_frame_recipe, invisible_frame);
+        invisible_regular_item_frame.setAmount(8);
+        ShapedRecipe invisRecipe = new ShapedRecipe(regular_invisible_item_frame_recipe, invisible_regular_item_frame);
         invisRecipe.shape("FFF", "FPF", "FFF");
         invisRecipe.setIngredient('F', Material.ITEM_FRAME);
         invisRecipe.setIngredient('P', new RecipeChoice.ExactChoice(config.recipe_center_items));
@@ -124,7 +125,7 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     private void onItemSpawn(ItemSpawnEvent event) {
         Item item = event.getEntity();
-        if(!item.getItemStack().getType().equals(Material.ITEM_FRAME)) return;
+        if (!item.getItemStack().getType().equals(Material.ITEM_FRAME)) return;
 
         String itemDisplayName;
         Player randomNearbyPlayer = getRandomNearbyPlayer(item.getLocation());
@@ -135,16 +136,16 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
         }
 
         Iterator<DroppedFrameLocation> iter = droppedFrames.iterator();
-        while(iter.hasNext()) {
+        while (iter.hasNext()) {
             DroppedFrameLocation droppedFrameLocation = iter.next();
-            if(droppedFrameLocation.isFrame(item)) {
-                ItemStack invisibleItemFrame = invisible_item_frame;
-                ItemMeta meta = invisibleItemFrame.getItemMeta();
+            if (droppedFrameLocation.isFrame(item)) {
+                ItemStack invisibleRegularItemFrame = getInvisibleRegularItemFrame();
+                ItemMeta meta = invisibleRegularItemFrame.getItemMeta();
                 meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', itemDisplayName));
-                invisibleItemFrame.setItemMeta(meta);
-                invisibleItemFrame.setType(Material.ITEM_FRAME);
+                invisibleRegularItemFrame.setItemMeta(meta);
+                invisibleRegularItemFrame.setType(Material.ITEM_FRAME);
 
-                event.getEntity().setItemStack(invisibleItemFrame);
+                event.getEntity().setItemStack(invisibleRegularItemFrame);
 
                 droppedFrameLocation.getRemoval().cancel();
                 iter.remove();
@@ -155,5 +156,9 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
 
     private boolean isRegularInvisibleRecipe(Recipe recipe) {
         return recipe instanceof ShapedRecipe shapedRecipe && shapedRecipe.getKey().equals(regular_invisible_item_frame_recipe);
+    }
+
+    private ItemStack getInvisibleRegularItemFrame() {
+        return template_invisible_regular_item_frame;
     }
 }

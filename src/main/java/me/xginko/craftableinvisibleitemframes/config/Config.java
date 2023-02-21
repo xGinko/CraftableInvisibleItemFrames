@@ -22,7 +22,7 @@ public class Config {
     private final Logger logger;
 
     public final Locale default_lang;
-    public final boolean auto_lang, can_do_glowsquid_frames, should_enchant_frame_items;
+    public final boolean auto_lang, can_do_glowsquid_frames;
     public final double config_version;
     public final List<ItemStack> recipe_center_items;
 
@@ -48,7 +48,6 @@ public class Config {
         } else {
             this.can_do_glowsquid_frames = getBoolean("include-glowink-itemframes", true);
         }
-        this.should_enchant_frame_items = getBoolean("enchant-frame-items", true);
 
         // Recipe center items
         config.addSection("Recipe Center Items");
