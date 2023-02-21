@@ -32,8 +32,8 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
 
     private final CraftableInvisibleItemFrames plugin;
     private final NamespacedKey glowsquid_invisible_item_frame_tag, glowsquid_invisible_item_frame_recipe;
-    private final boolean placed_item_frames_have_glowing_outline, should_enchant_frame_items;
-    private final HashSet<DroppedFrameLocation> droppedFrames = new HashSet<>();
+    private final boolean placed_item_frames_have_glowing_outline;
+    private final HashSet<DroppedFrameLocation> droppedGlowsquidFrames = new HashSet<>();
     private final ItemStack template_invisible_glowsquid_item_frame;
 
     public GlowsquidInvisibleItemFrames() {
@@ -43,7 +43,7 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
 
         Config config = CraftableInvisibleItemFrames.getConfiguration();
         this.placed_item_frames_have_glowing_outline = config.getBoolean("glowsquid-invisible-itemframes.glowing-outlines", true);
-        this.should_enchant_frame_items = config.getBoolean("glowsquid-invisible-itemframes.enchant-frame-items", true);
+        boolean should_enchant_frame_items = config.getBoolean("glowsquid-invisible-itemframes.enchant-frame-items", true);
 
         ItemStack invisible_glowsquid_frame = new ItemStack(Material.GLOW_ITEM_FRAME, 1);
         ItemMeta meta = invisible_glowsquid_frame.getItemMeta();
@@ -77,7 +77,7 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     private void onCraft(PrepareItemCraftEvent event) {
-        if (!isGlowsquidInvisibleRecipe(event.getRecipe())) return;
+        if (!isInvisibleGlowsquidFrameRecipe(event.getRecipe())) return;
 
         Player player = (Player) event.getView().getPlayer();
         if (player.hasPermission("craftableinvisibleitemframes.craft")) {
@@ -126,8 +126,7 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
             ItemStack itemFrameInHand;
             if (player.getInventory().getItemInMainHand().getType().equals(Material.GLOW_ITEM_FRAME)) {
                 itemFrameInHand = player.getInventory().getItemInMainHand();
-            }
-            else if (player.getInventory().getItemInOffHand().getType().equals(Material.GLOW_ITEM_FRAME)) {
+            } else if (player.getInventory().getItemInOffHand().getType().equals(Material.GLOW_ITEM_FRAME)) {
                 itemFrameInHand = player.getInventory().getItemInOffHand();
             } else {
                 return;
@@ -155,11 +154,11 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
             if (!glowItemFrame.getPersistentDataContainer().has(glowsquid_invisible_item_frame_tag, PersistentDataType.BYTE)) return;
             // Sets up a bounding box that checks for items near the frame and converts them
             DroppedFrameLocation droppedFrameLocation = new DroppedFrameLocation(glowItemFrame.getLocation());
-            droppedFrames.add(droppedFrameLocation);
+            droppedGlowsquidFrames.add(droppedFrameLocation);
             droppedFrameLocation.setRemoval((new BukkitRunnable() {
                 @Override
                 public void run() {
-                    droppedFrames.remove(droppedFrameLocation);
+                    droppedGlowsquidFrames.remove(droppedFrameLocation);
                 }
             }).runTaskLater(plugin, 20L));
         }
@@ -178,7 +177,7 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
             itemDisplayName = CraftableInvisibleItemFrames.getLang(randomNearbyPlayer.locale()).glow_invisible_item_frame;
         }
 
-        Iterator<DroppedFrameLocation> iterator = droppedFrames.iterator();
+        Iterator<DroppedFrameLocation> iterator = droppedGlowsquidFrames.iterator();
         while (iterator.hasNext()) {
             DroppedFrameLocation droppedFrameLocation = iterator.next();
             if(droppedFrameLocation.isFrame(item)) {
@@ -196,7 +195,7 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
         }
     }
 
-    private boolean isGlowsquidInvisibleRecipe(Recipe recipe) {
+    private boolean isInvisibleGlowsquidFrameRecipe(Recipe recipe) {
         return recipe instanceof ShapedRecipe shapedRecipe && shapedRecipe.getKey().equals(glowsquid_invisible_item_frame_recipe);
     }
 

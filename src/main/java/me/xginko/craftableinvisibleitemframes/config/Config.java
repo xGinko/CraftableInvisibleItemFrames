@@ -46,7 +46,7 @@ public class Config {
         if (CraftableInvisibleItemFrames.getMCVersion() < 17) {
             this.can_do_glowsquid_frames = false;
         } else {
-            this.can_do_glowsquid_frames = getBoolean("include-glowink-itemframes", true);
+            this.can_do_glowsquid_frames = getBoolean("glowsquid-invisible-itemframes.enabled", true);
         }
 
         // Recipe center items

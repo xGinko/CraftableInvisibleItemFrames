@@ -31,8 +31,8 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
 
     private final CraftableInvisibleItemFrames plugin;
     private final NamespacedKey regular_invisible_item_frame_tag, regular_invisible_item_frame_recipe;
-    private final boolean placed_item_frames_have_glowing_outline, should_enchant_frame_items;
-    private final HashSet<DroppedFrameLocation> droppedFrames = new HashSet<>();
+    private final boolean placed_item_frames_have_glowing_outline;
+    private final HashSet<DroppedFrameLocation> droppedRegularFrames = new HashSet<>();
     private final ItemStack template_invisible_regular_item_frame;
 
     public RegularInvisibleItemFrames() {
@@ -42,7 +42,7 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
 
         Config config = CraftableInvisibleItemFrames.getConfiguration();
         this.placed_item_frames_have_glowing_outline = config.getBoolean("regular-invisible-itemframes.glowing-outlines", true);
-        this.should_enchant_frame_items = config.getBoolean("regular-invisible-itemframes.enchant-frame-items", true);
+        boolean should_enchant_frame_items = config.getBoolean("regular-invisible-itemframes.enchant-frame-items", true);
 
         ItemStack invisible_regular_item_frame = new ItemStack(Material.ITEM_FRAME, 1);
         ItemMeta meta = invisible_regular_item_frame.getItemMeta();
@@ -76,15 +76,13 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     private void onHangingPlace(HangingPlaceEvent event) {
-        if (event.getPlayer() == null) return;
-        if (event.getEntity() instanceof ItemFrame itemFrameEntity) {
+        Player player = event.getPlayer();
+        if (player != null && event.getEntity() instanceof ItemFrame itemFrameEntity) {
             // Get the frame item that the player placed
             ItemStack itemFrameInHand;
-            Player player = event.getPlayer();
             if (player.getInventory().getItemInMainHand().getType().equals(Material.ITEM_FRAME)) {
                 itemFrameInHand = player.getInventory().getItemInMainHand();
-            }
-            else if (player.getInventory().getItemInOffHand().getType().equals(Material.ITEM_FRAME)) {
+            } else if (player.getInventory().getItemInOffHand().getType().equals(Material.ITEM_FRAME)) {
                 itemFrameInHand = player.getInventory().getItemInOffHand();
             } else {
                 return;
@@ -112,11 +110,11 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
             if (!itemFrame.getPersistentDataContainer().has(regular_invisible_item_frame_tag, PersistentDataType.BYTE)) return;
             // Sets up a bounding box that checks for items near the frame and converts them
             DroppedFrameLocation droppedFrameLocation = new DroppedFrameLocation(itemFrame.getLocation());
-            droppedFrames.add(droppedFrameLocation);
+            droppedRegularFrames.add(droppedFrameLocation);
             droppedFrameLocation.setRemoval((new BukkitRunnable() {
                 @Override
                 public void run() {
-                    droppedFrames.remove(droppedFrameLocation);
+                    droppedRegularFrames.remove(droppedFrameLocation);
                 }
             }).runTaskLater(plugin, 20L));
         }
@@ -135,9 +133,9 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
             itemDisplayName = CraftableInvisibleItemFrames.getLang(randomNearbyPlayer.locale()).invisible_item_frame;
         }
 
-        Iterator<DroppedFrameLocation> iter = droppedFrames.iterator();
-        while (iter.hasNext()) {
-            DroppedFrameLocation droppedFrameLocation = iter.next();
+        Iterator<DroppedFrameLocation> droppedFrameLocationIterator = droppedRegularFrames.iterator();
+        while (droppedFrameLocationIterator.hasNext()) {
+            DroppedFrameLocation droppedFrameLocation = droppedFrameLocationIterator.next();
             if (droppedFrameLocation.isFrame(item)) {
                 ItemStack invisibleRegularItemFrame = getInvisibleRegularItemFrame();
                 ItemMeta meta = invisibleRegularItemFrame.getItemMeta();
@@ -148,13 +146,13 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
                 event.getEntity().setItemStack(invisibleRegularItemFrame);
 
                 droppedFrameLocation.getRemoval().cancel();
-                iter.remove();
+                droppedFrameLocationIterator.remove();
                 break;
             }
         }
     }
 
-    private boolean isRegularInvisibleRecipe(Recipe recipe) {
+    private boolean isInvisibleRegularFrameRecipe(Recipe recipe) {
         return recipe instanceof ShapedRecipe shapedRecipe && shapedRecipe.getKey().equals(regular_invisible_item_frame_recipe);
     }
 
