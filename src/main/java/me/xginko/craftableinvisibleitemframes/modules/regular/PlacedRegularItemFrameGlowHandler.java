@@ -26,7 +26,7 @@ public class PlacedRegularItemFrameGlowHandler implements CraftableInvisibleItem
 
     @Override
     public boolean shouldEnable() {
-        return CraftableInvisibleItemFrames.getConfiguration().getBoolean("regular-invisible-itemframes.glowing-outlines", true);
+        return CraftableInvisibleItemFrames.getConfiguration().regular_placed_item_frames_have_glowing_outlines;
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)

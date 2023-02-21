@@ -25,7 +25,8 @@ permissions:
       craftableinvisibleitemframes.cmd.reload: true
       craftableinvisibleitemframes.cmd.version: true
       craftableinvisibleitemframes.cmd.get: true
-      craftableinvisibleitemframes.cmd.setitem: true
+      craftableinvisibleitemframes.cmd.additem: true
+      craftableinvisibleitemframes.cmd.removeitem: true
       craftableinvisibleitemframes.cmd.forcerecheck: true
   craftableinvisibleitemframes.cmd.reload:
     description: Permission to reload the plugin config
@@ -34,6 +35,8 @@ permissions:
   craftableinvisibleitemframes.cmd.forcerecheck:
     description: Permission to force a recheck of all itemframes
   craftableinvisibleitemframes.cmd.get:
-    description: IDK yet
-  craftableinvisibleitemframes.cmd.setitem:
-    description: IDK yet
+    description: Permission to get an invisible itemframe via command
+  craftableinvisibleitemframes.cmd.additem:
+    description: Permission to add a held item to the craftingrecipe center items list
+  craftableinvisibleitemframes.cmd.removeitem:
+    description: Permission to remove a held item from the craftingrecipe center items list

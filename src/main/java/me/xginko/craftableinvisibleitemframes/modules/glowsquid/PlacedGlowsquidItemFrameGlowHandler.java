@@ -26,7 +26,7 @@ public class PlacedGlowsquidItemFrameGlowHandler implements CraftableInvisibleIt
 
     @Override
     public boolean shouldEnable() {
-        return CraftableInvisibleItemFrames.getConfiguration().getBoolean("glowsquid-invisible-itemframes.glowing-outlines", true);
+        return CraftableInvisibleItemFrames.getConfiguration().glowsquid_placed_item_frames_have_glowing_outlines;
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
