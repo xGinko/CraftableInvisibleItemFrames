@@ -48,7 +48,8 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
         invisible_regular_item_frame.setItemMeta(meta);
         this.template_invisible_regular_item_frame = invisible_regular_item_frame;
 
-        // register recipe
+        // remove any old recipe and register new recipe
+        plugin.removeRecipe(plugin.regular_invisible_item_frame_recipe);
         invisible_regular_item_frame.setAmount(8);
         ShapedRecipe invisRecipe = new ShapedRecipe(plugin.regular_invisible_item_frame_recipe, invisible_regular_item_frame);
         invisRecipe.shape("FFF", "FPF", "FFF");

@@ -114,19 +114,18 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        removeRecipes();
+        removeRecipe(regular_invisible_item_frame_recipe);
+        removeRecipe(glowsquid_invisible_item_frame_recipe);
     }
 
-    public void removeRecipes() {
+    public void removeRecipe(NamespacedKey recipeKey) {
         Iterator<Recipe> recipeIterator = getServer().recipeIterator();
         while (recipeIterator.hasNext()) {
             Recipe recipe = recipeIterator.next();
             if (recipe instanceof ShapedRecipe shapedRecipe) {
-                if (
-                        shapedRecipe.getKey().equals(regular_invisible_item_frame_recipe)
-                        || shapedRecipe.getKey().equals(glowsquid_invisible_item_frame_recipe)
-                ) {
+                if (shapedRecipe.getKey().equals(recipeKey)) {
                     recipeIterator.remove();
+                    break;
                 }
             }
         }
@@ -168,7 +167,6 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
     }
 
     public void reloadConfiguration() {
-        removeRecipes();
         config = new Config();
         CraftableInvisibleItemFramesModule.reloadModules();
         config.saveConfig();
