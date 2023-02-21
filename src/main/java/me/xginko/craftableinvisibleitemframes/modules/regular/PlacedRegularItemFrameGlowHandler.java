@@ -3,7 +3,6 @@ package me.xginko.craftableinvisibleitemframes.modules.regular;
 import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
 import me.xginko.craftableinvisibleitemframes.modules.CraftableInvisibleItemFramesModule;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,11 +14,9 @@ import org.bukkit.persistence.PersistentDataType;
 public class PlacedRegularItemFrameGlowHandler implements CraftableInvisibleItemFramesModule, Listener {
 
     private final CraftableInvisibleItemFrames plugin;
-    private final NamespacedKey regular_invisible_item_frame_tag;
 
     protected PlacedRegularItemFrameGlowHandler() {
         this.plugin = CraftableInvisibleItemFrames.getInstance();
-        this.regular_invisible_item_frame_tag = CraftableInvisibleItemFrames.getRegularInvisibleItemFrameTag();
     }
 
     @Override
@@ -36,7 +33,7 @@ public class PlacedRegularItemFrameGlowHandler implements CraftableInvisibleItem
     private void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         if (event.getRightClicked() instanceof ItemFrame itemFrame) {
             if (
-                    itemFrame.getPersistentDataContainer().has(regular_invisible_item_frame_tag, PersistentDataType.BYTE)
+                    itemFrame.getPersistentDataContainer().has(plugin.regular_invisible_item_frame_tag, PersistentDataType.BYTE)
             ) {
                 plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
                     if (!itemFrame.getItem().getType().equals(Material.AIR)) {
@@ -52,7 +49,7 @@ public class PlacedRegularItemFrameGlowHandler implements CraftableInvisibleItem
     private void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (event.getEntity() instanceof ItemFrame itemFrame) {
             if (
-                    itemFrame.getPersistentDataContainer().has(regular_invisible_item_frame_tag, PersistentDataType.BYTE)
+                    itemFrame.getPersistentDataContainer().has(plugin.regular_invisible_item_frame_tag, PersistentDataType.BYTE)
             ) {
                 plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
                     if (itemFrame.getItem().getType().equals(Material.AIR)) {

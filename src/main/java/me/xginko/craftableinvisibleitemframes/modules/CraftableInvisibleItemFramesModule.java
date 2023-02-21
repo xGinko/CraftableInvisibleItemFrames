@@ -23,7 +23,7 @@ public interface CraftableInvisibleItemFramesModule {
 
         modules.add(new RegularInvisibleItemFrames());
         modules.add(new PlacedGlowsquidItemFrameGlowHandler());
-        if (CraftableInvisibleItemFrames.getConfiguration().can_do_glowsquid_frames) {
+        if (CraftableInvisibleItemFrames.getConfiguration().glowsquid_invisible_itemframes_are_enabled) {
             modules.add(new GlowsquidInvisibleItemFrames());
         }
 

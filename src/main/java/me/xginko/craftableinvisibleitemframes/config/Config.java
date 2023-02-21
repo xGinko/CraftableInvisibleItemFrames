@@ -22,7 +22,8 @@ public class Config {
     private final Logger logger;
 
     public final Locale default_lang;
-    public final boolean auto_lang, can_do_glowsquid_frames;
+    public final boolean auto_lang, regular_invisible_itemframes_are_enabled, regular_placed_item_frames_have_glowing_outlines, regular_item_frames_should_be_enchanted,
+                glowsquid_invisible_itemframes_are_enabled, glowsquid_placed_item_frames_have_glowing_outlines, glowsquid_item_frames_should_be_enchanted;
     public final double config_version;
     public final List<ItemStack> recipe_center_items;
 
@@ -41,13 +42,19 @@ public class Config {
         this.default_lang = Locale.forLanguageTag(getString("language.default-language", "en_us", "The default language that will be used if auto-language is false or no matching language file was found.").replace("_", "-"));
         this.auto_lang = getBoolean("language.auto-language", true, "If set to true, will display messages based on client language");
 
-        // General
-        config.addSection("General");
-        if (CraftableInvisibleItemFrames.getMCVersion() < 17) {
-            this.can_do_glowsquid_frames = false;
-        } else {
-            this.can_do_glowsquid_frames = getBoolean("glowsquid-invisible-itemframes.enabled", true);
-        }
+        // Regular invis iframes
+        config.addSection("Regular Invisible Itemframes");
+        this.regular_invisible_itemframes_are_enabled = config.getBoolean("regular-invisible-itemframes.enabled", true);
+        this.regular_placed_item_frames_have_glowing_outlines = config.getBoolean("regular-invisible-itemframes.glowing-outlines", true);
+        this.regular_item_frames_should_be_enchanted = config.getBoolean("regular-invisible-itemframes.enchant-frame-items", true);
+
+        // Glowsquid invis iframes
+        config.addSection("Glowsquid Invisible Itemframes");
+        boolean can_do_glowsquid_frames = config.getBoolean("glowsquid-invisible-itemframes.enabled", true);
+        if (CraftableInvisibleItemFrames.getMCVersion() < 17) can_do_glowsquid_frames = false;
+        this.glowsquid_invisible_itemframes_are_enabled = can_do_glowsquid_frames;
+        this.glowsquid_placed_item_frames_have_glowing_outlines = config.getBoolean("glowsquid-invisible-itemframes.glowing-outlines", true);
+        this.glowsquid_item_frames_should_be_enchanted = config.getBoolean("glowsquid-invisible-itemframes.enchant-frame-items", true);
 
         // Recipe center items
         config.addSection("Recipe Center Items");

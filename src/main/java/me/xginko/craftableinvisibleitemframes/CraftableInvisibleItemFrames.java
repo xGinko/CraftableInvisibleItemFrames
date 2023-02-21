@@ -4,9 +4,12 @@ import me.xginko.craftableinvisibleitemframes.commands.CraftableInvisibleItemFra
 import me.xginko.craftableinvisibleitemframes.config.Config;
 import me.xginko.craftableinvisibleitemframes.config.LanguageCache;
 import me.xginko.craftableinvisibleitemframes.modules.CraftableInvisibleItemFramesModule;
-import org.bstats.bukkit.Metrics;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
@@ -31,8 +34,8 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
     private static Logger logger;
     private static Config config;
     private static int minorMCVersion = Integer.MIN_VALUE;
-    private static NamespacedKey regular_invisible_item_frame_tag, regular_invisible_item_frame_recipe,
-                                glowsquid_invisible_item_frame_tag, glowsquid_invisible_item_frame_recipe;
+    public NamespacedKey regular_invisible_item_frame_tag, regular_invisible_item_frame_recipe,
+            glowsquid_invisible_item_frame_tag, glowsquid_invisible_item_frame_recipe;
     private static HashMap<String, LanguageCache> languageCacheMap;
 
     @Override
@@ -92,7 +95,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
             }
         }
 
-        logger.info("Registering NamespacedKeys");
+        logger.info("Registering Namespaced Keys");
         regular_invisible_item_frame_tag = new NamespacedKey(this, "invisible-itemframe");
         regular_invisible_item_frame_recipe = new NamespacedKey(this, "invisible-itemframe-recipe");
         glowsquid_invisible_item_frame_tag = new NamespacedKey(this, "invisible-glowsquid-itemframe");
@@ -102,11 +105,10 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         reloadConfiguration();
 
         logger.info("Registering Commands");
-        reloadCommands();
+        CraftableInvisibleItemFramesCommand.reloadCommands();
 
-        logger.info("Loading metrics");
-        new Metrics(this, 00000000);
-
+        // logger.info("Loading metrics");
+        // new Metrics(this, 00000000);
 
     }
 
@@ -120,24 +122,49 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         while (recipeIterator.hasNext()) {
             Recipe recipe = recipeIterator.next();
             if (recipe instanceof ShapedRecipe shapedRecipe) {
-                if (config.can_do_glowsquid_frames) {
-                    if (
-                            shapedRecipe.getKey().equals(regular_invisible_item_frame_recipe)
-                            || shapedRecipe.getKey().equals(glowsquid_invisible_item_frame_recipe)
-                    ) {
-                        recipeIterator.remove();
+                if (
+                        shapedRecipe.getKey().equals(regular_invisible_item_frame_recipe)
+                        || shapedRecipe.getKey().equals(glowsquid_invisible_item_frame_recipe)
+                ) {
+                    recipeIterator.remove();
+                }
+            }
+        }
+    }
+
+    // Apply outline glowing settings to all loaded item frames
+    public void reApplyOutlineGlowingSettingsToAllLoadedInvisibleItemFrames() {
+        for (World world : getServer().getWorlds()) {
+            for (Entity entity : world.getEntities()) {
+                if (entity instanceof ItemFrame itemFrame) {
+                    if (itemFrame.getPersistentDataContainer().has(glowsquid_invisible_item_frame_tag)) {
+                        if (itemFrame.getItem().getType().equals(Material.AIR) && config.glowsquid_placed_item_frames_have_glowing_outlines) {
+                            itemFrame.setGlowing(true);
+                            itemFrame.setVisible(true);
+                        } else if (!itemFrame.getItem().getType().equals(Material.AIR)) {
+                            itemFrame.setGlowing(false);
+                            itemFrame.setVisible(false);
+                        }
                     }
-                } else {
-                    if (shapedRecipe.getKey().equals(regular_invisible_item_frame_recipe)) {
-                        recipeIterator.remove();
+                    else
+                    if (itemFrame.getPersistentDataContainer().has(regular_invisible_item_frame_tag)) {
+                        if (itemFrame.getItem().getType().equals(Material.AIR) && config.regular_placed_item_frames_have_glowing_outlines) {
+                            itemFrame.setGlowing(true);
+                            itemFrame.setVisible(true);
+                        } else if (!itemFrame.getItem().getType().equals(Material.AIR)) {
+                            itemFrame.setGlowing(false);
+                            itemFrame.setVisible(false);
+                        }
                     }
                 }
             }
         }
     }
 
-    public void reloadCommands() {
+    public void reloadPlugin() {
+        reloadConfiguration();
         CraftableInvisibleItemFramesCommand.reloadCommands();
+        reApplyOutlineGlowingSettingsToAllLoadedInvisibleItemFrames();
     }
 
     public void reloadConfiguration() {
@@ -216,21 +243,5 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
 
     public static int getMCVersion() {
         return minorMCVersion;
-    }
-
-    public static NamespacedKey getRegularInvisibleItemFrameTag() {
-        return regular_invisible_item_frame_tag;
-    }
-
-    public static NamespacedKey getRegularInvisibleItemFrameRecipeKey() {
-        return regular_invisible_item_frame_recipe;
-    }
-
-    public static NamespacedKey getGlowsquidInvisibleItemFrameTag() {
-        return glowsquid_invisible_item_frame_tag;
-    }
-
-    public static NamespacedKey getGlowsquidInvisibleItemFrameRecipeKey() {
-        return glowsquid_invisible_item_frame_recipe;
     }
 }
