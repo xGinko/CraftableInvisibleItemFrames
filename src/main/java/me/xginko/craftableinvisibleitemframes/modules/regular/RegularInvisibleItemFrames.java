@@ -42,7 +42,7 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
         ItemMeta meta = invisible_regular_item_frame.getItemMeta();
         if (config.regular_item_frames_should_be_enchanted) {
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            meta.addEnchant(Enchantment.DURABILITY, 1, true);
+            meta.addEnchant(Enchantment.BINDING_CURSE, 1, true);
         }
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', CraftableInvisibleItemFrames.getLang(config.default_lang).invisible_item_frame));
         meta.getPersistentDataContainer().set(plugin.regular_invisible_item_frame_tag, PersistentDataType.BYTE, (byte) 1);
