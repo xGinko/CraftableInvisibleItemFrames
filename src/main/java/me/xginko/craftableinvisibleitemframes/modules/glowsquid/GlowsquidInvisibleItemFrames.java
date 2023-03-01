@@ -71,13 +71,13 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
             for (ItemStack item : event.getInventory().getMatrix()) {
                 if (item == null || item.getType().equals(Material.AIR)) continue;
 
-                if(item.getType().equals(Material.GLOW_INK_SAC)) {
+                if (item.getType().equals(Material.GLOW_INK_SAC)) {
                     if (foundGlowInkSac) return;
                     foundGlowInkSac = true;
                     continue;
                 }
 
-                if(item.getType().equals(Material.ITEM_FRAME)) {
+                if (item.getType().equals(Material.ITEM_FRAME)) {
                     if (item.getItemMeta().getPersistentDataContainer().has(plugin.regular_invisible_item_frame_tag, PersistentDataType.BYTE)) {
                         if (foundInvisibleRegularItemFrame) return;
                         foundInvisibleRegularItemFrame = true;
@@ -89,7 +89,7 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
                 return;
             }
 
-            if(foundInvisibleRegularItemFrame && foundGlowInkSac) {
+            if (foundInvisibleRegularItemFrame && foundGlowInkSac) {
                 ItemStack invisibleGlowsquidItemFrame = getInvisibleGlowsquidItemFrame();
                 ItemMeta meta = invisibleGlowsquidItemFrame.getItemMeta();
                 meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', CraftableInvisibleItemFrames.getLang(player.locale()).glow_invisible_item_frame));
@@ -149,7 +149,7 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     private void onItemSpawn(ItemSpawnEvent event) {
         Item item = event.getEntity();
-        if(!item.getItemStack().getType().equals(Material.GLOW_ITEM_FRAME)) return;
+        if (!item.getItemStack().getType().equals(Material.GLOW_ITEM_FRAME)) return;
 
         String itemDisplayName;
         Player randomNearbyPlayer = getRandomNearbyPlayer(item.getLocation());
