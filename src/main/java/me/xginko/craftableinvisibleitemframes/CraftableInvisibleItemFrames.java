@@ -4,6 +4,7 @@ import me.xginko.craftableinvisibleitemframes.commands.CraftableInvisibleItemFra
 import me.xginko.craftableinvisibleitemframes.config.Config;
 import me.xginko.craftableinvisibleitemframes.config.LanguageCache;
 import me.xginko.craftableinvisibleitemframes.modules.CraftableInvisibleItemFramesModule;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -113,6 +114,9 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
 
         logger.info("Registering Commands");
         CraftableInvisibleItemFramesCommand.reloadCommands();
+
+        logger.info("Loading Metrics");
+        new Metrics(this, 17841);
     }
 
     @Override
