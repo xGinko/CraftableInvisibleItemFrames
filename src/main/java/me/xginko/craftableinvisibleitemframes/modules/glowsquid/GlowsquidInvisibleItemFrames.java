@@ -154,7 +154,7 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
             if(droppedFrameLocation.isFrame(item)) {
                 ItemStack invisibleGlowsquidItemFrame = ItemUtils.getGlowsquidInvisibleItemFrame(1);
                 ItemMeta meta = invisibleGlowsquidItemFrame.getItemMeta();
-                meta.displayName(Component.text(ChatColor.translateAlternateColorCodes('&', itemDisplayName)));
+                meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', itemDisplayName));
                 invisibleGlowsquidItemFrame.setItemMeta(meta);
 
                 event.getEntity().setItemStack(invisibleGlowsquidItemFrame);
