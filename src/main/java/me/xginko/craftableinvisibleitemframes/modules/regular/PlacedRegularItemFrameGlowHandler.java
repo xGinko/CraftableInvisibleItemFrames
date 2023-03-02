@@ -33,7 +33,7 @@ public class PlacedRegularItemFrameGlowHandler implements CraftableInvisibleItem
     private void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         if (event.getRightClicked() instanceof ItemFrame itemFrame) {
             if (
-                    itemFrame.getPersistentDataContainer().has(plugin.regular_invisible_item_frame_tag, PersistentDataType.BYTE)
+                    itemFrame.getPersistentDataContainer().has(CraftableInvisibleItemFrames.getRegularInvisibleItemFrameTag(), PersistentDataType.BYTE)
             ) {
                 plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
                     if (!itemFrame.getItem().getType().equals(Material.AIR)) {
@@ -49,7 +49,7 @@ public class PlacedRegularItemFrameGlowHandler implements CraftableInvisibleItem
     private void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (event.getEntity() instanceof ItemFrame itemFrame) {
             if (
-                    itemFrame.getPersistentDataContainer().has(plugin.regular_invisible_item_frame_tag, PersistentDataType.BYTE)
+                    itemFrame.getPersistentDataContainer().has(CraftableInvisibleItemFrames.getRegularInvisibleItemFrameTag(), PersistentDataType.BYTE)
             ) {
                 plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
                     if (itemFrame.getItem().getType().equals(Material.AIR)) {

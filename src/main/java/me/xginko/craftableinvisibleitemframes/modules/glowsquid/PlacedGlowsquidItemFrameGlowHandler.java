@@ -33,7 +33,7 @@ public class PlacedGlowsquidItemFrameGlowHandler implements CraftableInvisibleIt
     private void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         if (event.getRightClicked() instanceof GlowItemFrame glowItemFrame) {
             if (
-                    glowItemFrame.getPersistentDataContainer().has(plugin.glowsquid_invisible_item_frame_tag, PersistentDataType.BYTE)
+                    glowItemFrame.getPersistentDataContainer().has(CraftableInvisibleItemFrames.getGlowsquidInvisibleItemFrameTag(), PersistentDataType.BYTE)
             ) {
                 plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
                     if (!glowItemFrame.getItem().getType().equals(Material.AIR)) {
@@ -49,7 +49,7 @@ public class PlacedGlowsquidItemFrameGlowHandler implements CraftableInvisibleIt
     private void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (event.getEntity() instanceof GlowItemFrame glowItemFrame) {
             if (
-                    glowItemFrame.getPersistentDataContainer().has(plugin.glowsquid_invisible_item_frame_tag, PersistentDataType.BYTE)
+                    glowItemFrame.getPersistentDataContainer().has(CraftableInvisibleItemFrames.getGlowsquidInvisibleItemFrameTag(), PersistentDataType.BYTE)
             ) {
                 plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
                     if (glowItemFrame.getItem().getType().equals(Material.AIR)) {

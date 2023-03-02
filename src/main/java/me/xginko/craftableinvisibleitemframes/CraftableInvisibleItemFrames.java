@@ -37,8 +37,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
     private static Logger logger;
     private static Config config;
     private static int minorMCVersion = Integer.MIN_VALUE;
-    public NamespacedKey regular_invisible_item_frame_tag, regular_invisible_item_frame_recipe,
-            glowsquid_invisible_item_frame_tag;
+    private static NamespacedKey TAG_regular_invisible_item_frame, RECIPE_regular_invisible_item_frame, TAG_glowsquid_invisible_item_frame;
     private static HashMap<String, LanguageCache> languageCacheMap;
 
     @Override
@@ -99,9 +98,9 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         }
 
         logger.info("Registering Namespaced Keys");
-        regular_invisible_item_frame_tag = new NamespacedKey(this, "invisible-itemframe");
-        regular_invisible_item_frame_recipe = new NamespacedKey(this, "invisible-itemframe-recipe");
-        glowsquid_invisible_item_frame_tag = new NamespacedKey(this, "invisible-glowsquid-itemframe");
+        TAG_regular_invisible_item_frame = new NamespacedKey(this, "invisible-itemframe");
+        RECIPE_regular_invisible_item_frame = new NamespacedKey(this, "invisible-itemframe-recipe");
+        TAG_glowsquid_invisible_item_frame = new NamespacedKey(this, "invisible-glowsquid-itemframe");
 
         logger.info("Loading Language");
         reloadLang();
@@ -118,7 +117,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        removeRecipe(regular_invisible_item_frame_recipe);
+        removeRecipe(RECIPE_regular_invisible_item_frame);
     }
 
     public void removeRecipe(NamespacedKey recipeKey) {
@@ -138,7 +137,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         for (World world : getServer().getWorlds()) {
             for (Entity entity : world.getEntities()) {
                 if (entity instanceof ItemFrame itemFrame) {
-                    if (itemFrame.getPersistentDataContainer().has(glowsquid_invisible_item_frame_tag)) {
+                    if (itemFrame.getPersistentDataContainer().has(TAG_glowsquid_invisible_item_frame)) {
                         if (itemFrame.getItem().getType().equals(Material.AIR) && config.glowsquid_placed_item_frames_have_glowing_outlines) {
                             itemFrame.setGlowing(true);
                             itemFrame.setVisible(true);
@@ -146,7 +145,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
                             itemFrame.setGlowing(false);
                             itemFrame.setVisible(false);
                         }
-                    } else if (itemFrame.getPersistentDataContainer().has(regular_invisible_item_frame_tag)) {
+                    } else if (itemFrame.getPersistentDataContainer().has(TAG_regular_invisible_item_frame)) {
                         if (itemFrame.getItem().getType().equals(Material.AIR) && config.regular_placed_item_frames_have_glowing_outlines) {
                             itemFrame.setGlowing(true);
                             itemFrame.setVisible(true);
@@ -161,7 +160,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
     }
 
     public void reloadRecipe() {
-        removeRecipe(regular_invisible_item_frame_recipe);
+        removeRecipe(RECIPE_regular_invisible_item_frame);
         ItemStack invisible_regular_item_frame = new ItemStack(Material.ITEM_FRAME, 1);
         ItemMeta meta = invisible_regular_item_frame.getItemMeta();
         if (config.regular_item_frames_should_be_enchanted) {
@@ -169,10 +168,10 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
             meta.addEnchant(Enchantment.BINDING_CURSE, 1, true);
         }
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', getLang(config.default_lang).invisible_item_frame));
-        meta.getPersistentDataContainer().set(regular_invisible_item_frame_tag, PersistentDataType.BYTE, (byte) 1);
+        meta.getPersistentDataContainer().set(TAG_regular_invisible_item_frame, PersistentDataType.BYTE, (byte) 1);
         invisible_regular_item_frame.setItemMeta(meta);
         invisible_regular_item_frame.setAmount(8);
-        ShapedRecipe invisRecipe = new ShapedRecipe(regular_invisible_item_frame_recipe, invisible_regular_item_frame);
+        ShapedRecipe invisRecipe = new ShapedRecipe(RECIPE_regular_invisible_item_frame, invisible_regular_item_frame);
         invisRecipe.shape("FFF", "FPF", "FFF");
         invisRecipe.setIngredient('F', Material.ITEM_FRAME);
         invisRecipe.setIngredient('P', new RecipeChoice.ExactChoice(config.recipe_center_items));
@@ -262,5 +261,17 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
 
     public static int getMCVersion() {
         return minorMCVersion;
+    }
+
+    public static NamespacedKey getRegularInvisibleItemFrameTag() {
+        return TAG_regular_invisible_item_frame;
+    }
+
+    public static boolean isInvisibleRegularFrameRecipe(Recipe recipe) {
+        return recipe instanceof ShapedRecipe shapedRecipe && shapedRecipe.getKey().equals(RECIPE_regular_invisible_item_frame);
+    }
+
+    public static NamespacedKey getGlowsquidInvisibleItemFrameTag() {
+        return TAG_glowsquid_invisible_item_frame;
     }
 }

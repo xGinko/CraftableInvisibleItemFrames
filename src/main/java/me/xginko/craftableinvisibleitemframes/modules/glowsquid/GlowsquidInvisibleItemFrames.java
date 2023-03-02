@@ -4,9 +4,10 @@ import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
 import me.xginko.craftableinvisibleitemframes.config.Config;
 import me.xginko.craftableinvisibleitemframes.modules.CraftableInvisibleItemFramesModule;
 import me.xginko.craftableinvisibleitemframes.utils.DroppedFrameLocation;
+import me.xginko.craftableinvisibleitemframes.utils.ItemUtils;
+import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.GlowItemFrame;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -17,7 +18,7 @@ import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
-import org.bukkit.inventory.*;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -32,22 +33,10 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
     private final CraftableInvisibleItemFrames plugin;
     private final Config config;
     private final HashSet<DroppedFrameLocation> droppedGlowsquidFrames = new HashSet<>();
-    private final ItemStack template_invisible_glowsquid_item_frame;
 
     public GlowsquidInvisibleItemFrames() {
         this.plugin = CraftableInvisibleItemFrames.getInstance();
         this.config = CraftableInvisibleItemFrames.getConfiguration();
-
-        ItemStack invisible_glowsquid_frame = new ItemStack(Material.GLOW_ITEM_FRAME, 1);
-        ItemMeta meta = invisible_glowsquid_frame.getItemMeta();
-        if (config.glowsquid_item_frames_should_be_enchanted) {
-            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            meta.addEnchant(Enchantment.CHANNELING, 1, true);
-        }
-        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', CraftableInvisibleItemFrames.getLang(config.default_lang).glow_invisible_item_frame));
-        meta.getPersistentDataContainer().set(plugin.glowsquid_invisible_item_frame_tag, PersistentDataType.BYTE, (byte) 1);
-        invisible_glowsquid_frame.setItemMeta(meta);
-        this.template_invisible_glowsquid_item_frame = invisible_glowsquid_frame;
     }
 
     @Override
@@ -62,7 +51,7 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     private void onCraft(PrepareItemCraftEvent event) {
-        if (isInvisibleRegularFrameRecipe(event.getRecipe())) return;
+        if (CraftableInvisibleItemFrames.isInvisibleRegularFrameRecipe(event.getRecipe())) return;
 
         Player player = (Player) event.getView().getPlayer();
         if (player.hasPermission("craftableinvisibleitemframes.craft")) {
@@ -78,7 +67,7 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
                 }
 
                 if (item.getType().equals(Material.ITEM_FRAME)) {
-                    if (item.getItemMeta().getPersistentDataContainer().has(plugin.regular_invisible_item_frame_tag, PersistentDataType.BYTE)) {
+                    if (item.getItemMeta().getPersistentDataContainer().has(CraftableInvisibleItemFrames.getRegularInvisibleItemFrameTag(), PersistentDataType.BYTE)) {
                         if (foundInvisibleRegularItemFrame) return;
                         foundInvisibleRegularItemFrame = true;
                         continue;
@@ -90,9 +79,9 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
             }
 
             if (foundInvisibleRegularItemFrame && foundGlowInkSac) {
-                ItemStack invisibleGlowsquidItemFrame = getInvisibleGlowsquidItemFrame();
+                ItemStack invisibleGlowsquidItemFrame = ItemUtils.getGlowsquidInvisibleItemFrame(1);
                 ItemMeta meta = invisibleGlowsquidItemFrame.getItemMeta();
-                meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', CraftableInvisibleItemFrames.getLang(player.locale()).glow_invisible_item_frame));
+                meta.displayName(Component.text(ChatColor.translateAlternateColorCodes('&', CraftableInvisibleItemFrames.getLang(player.locale()).glow_invisible_item_frame)));
                 invisibleGlowsquidItemFrame.setItemMeta(meta);
 
                 event.getInventory().setResult(invisibleGlowsquidItemFrame);
@@ -115,7 +104,7 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
             } else return;
 
             // If the frame item has the invisible tag, make the placed item frame invisible
-            if (!itemFrameInHand.getItemMeta().getPersistentDataContainer().has(plugin.glowsquid_invisible_item_frame_tag, PersistentDataType.BYTE)) return;
+            if (!itemFrameInHand.getItemMeta().getPersistentDataContainer().has(CraftableInvisibleItemFrames.getGlowsquidInvisibleItemFrameTag(), PersistentDataType.BYTE)) return;
             if (!player.hasPermission("craftableinvisibleitemframes.place")) {
                 event.setCancelled(true);
                 return;
@@ -126,14 +115,14 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
             } else {
                 glowItemFrame.setVisible(false);
             }
-            glowItemFrame.getPersistentDataContainer().set(plugin.glowsquid_invisible_item_frame_tag, PersistentDataType.BYTE, (byte) 1);
+            glowItemFrame.getPersistentDataContainer().set(CraftableInvisibleItemFrames.getGlowsquidInvisibleItemFrameTag(), PersistentDataType.BYTE, (byte) 1);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     private void onHangingBreak(HangingBreakEvent event) {
         if (event.getEntity() instanceof GlowItemFrame glowItemFrame) {
-            if (!glowItemFrame.getPersistentDataContainer().has(plugin.glowsquid_invisible_item_frame_tag, PersistentDataType.BYTE)) return;
+            if (!glowItemFrame.getPersistentDataContainer().has(CraftableInvisibleItemFrames.getGlowsquidInvisibleItemFrameTag(), PersistentDataType.BYTE)) return;
             // Sets up a bounding box that checks for items near the frame and converts them
             DroppedFrameLocation droppedFrameLocation = new DroppedFrameLocation(glowItemFrame.getLocation());
             droppedGlowsquidFrames.add(droppedFrameLocation);
@@ -163,9 +152,9 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
         while (iterator.hasNext()) {
             DroppedFrameLocation droppedFrameLocation = iterator.next();
             if(droppedFrameLocation.isFrame(item)) {
-                ItemStack invisibleGlowsquidItemFrame = getInvisibleGlowsquidItemFrame();
+                ItemStack invisibleGlowsquidItemFrame = ItemUtils.getGlowsquidInvisibleItemFrame(1);
                 ItemMeta meta = invisibleGlowsquidItemFrame.getItemMeta();
-                meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', itemDisplayName));
+                meta.displayName(Component.text(ChatColor.translateAlternateColorCodes('&', itemDisplayName)));
                 invisibleGlowsquidItemFrame.setItemMeta(meta);
 
                 event.getEntity().setItemStack(invisibleGlowsquidItemFrame);
@@ -177,11 +166,4 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
         }
     }
 
-    private boolean isInvisibleRegularFrameRecipe(Recipe recipe) {
-        return recipe instanceof ShapedRecipe shapedRecipe && shapedRecipe.getKey().equals(plugin.regular_invisible_item_frame_recipe);
-    }
-
-    private ItemStack getInvisibleGlowsquidItemFrame() {
-        return template_invisible_glowsquid_item_frame;
-    }
 }

@@ -4,9 +4,9 @@ import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
 import me.xginko.craftableinvisibleitemframes.config.Config;
 import me.xginko.craftableinvisibleitemframes.modules.CraftableInvisibleItemFramesModule;
 import me.xginko.craftableinvisibleitemframes.utils.DroppedFrameLocation;
+import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
@@ -16,7 +16,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -25,6 +24,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import static me.xginko.craftableinvisibleitemframes.utils.ItemUtils.getRegularInvisibleItemFrame;
 import static me.xginko.craftableinvisibleitemframes.utils.Tools.getRandomNearbyPlayer;
 
 public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesModule, Listener {
@@ -32,22 +32,10 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
     private final CraftableInvisibleItemFrames plugin;
     private final Config config;
     private final HashSet<DroppedFrameLocation> droppedRegularFrames = new HashSet<>();
-    private final ItemStack template_invisible_regular_item_frame;
 
     public RegularInvisibleItemFrames() {
         this.plugin = CraftableInvisibleItemFrames.getInstance();
         this.config = CraftableInvisibleItemFrames.getConfiguration();
-
-        ItemStack invisible_regular_item_frame = new ItemStack(Material.ITEM_FRAME, 1);
-        ItemMeta meta = invisible_regular_item_frame.getItemMeta();
-        if (config.regular_item_frames_should_be_enchanted) {
-            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            meta.addEnchant(Enchantment.CHANNELING, 1, true);
-        }
-        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', CraftableInvisibleItemFrames.getLang(config.default_lang).invisible_item_frame));
-        meta.getPersistentDataContainer().set(plugin.regular_invisible_item_frame_tag, PersistentDataType.BYTE, (byte) 1);
-        invisible_regular_item_frame.setItemMeta(meta);
-        this.template_invisible_regular_item_frame = invisible_regular_item_frame;
     }
 
     @Override
@@ -73,7 +61,7 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
             } else return;
 
             // If the frame item has the invisible tag, make the placed item frame invisible
-            if (!itemFrameInHand.getItemMeta().getPersistentDataContainer().has(plugin.regular_invisible_item_frame_tag, PersistentDataType.BYTE)) return;
+            if (!itemFrameInHand.getItemMeta().getPersistentDataContainer().has(CraftableInvisibleItemFrames.getRegularInvisibleItemFrameTag(), PersistentDataType.BYTE)) return;
             if (!player.hasPermission("craftableinvisibleitemframes.place")) {
                 event.setCancelled(true);
                 return;
@@ -84,14 +72,14 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
             } else {
                 itemFrameEntity.setVisible(false);
             }
-            itemFrameEntity.getPersistentDataContainer().set(plugin.regular_invisible_item_frame_tag, PersistentDataType.BYTE, (byte) 1);
+            itemFrameEntity.getPersistentDataContainer().set(CraftableInvisibleItemFrames.getRegularInvisibleItemFrameTag(), PersistentDataType.BYTE, (byte) 1);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     private void onHangingBreak(HangingBreakEvent event) {
         if (event.getEntity() instanceof ItemFrame itemFrame) {
-            if (!itemFrame.getPersistentDataContainer().has(plugin.regular_invisible_item_frame_tag, PersistentDataType.BYTE)) return;
+            if (!itemFrame.getPersistentDataContainer().has(CraftableInvisibleItemFrames.getRegularInvisibleItemFrameTag(), PersistentDataType.BYTE)) return;
             // Sets up a bounding box that checks for items near the frame and converts them
             DroppedFrameLocation droppedFrameLocation = new DroppedFrameLocation(itemFrame.getLocation());
             droppedRegularFrames.add(droppedFrameLocation);
@@ -121,11 +109,10 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
         while (droppedFrameLocationIterator.hasNext()) {
             DroppedFrameLocation droppedFrameLocation = droppedFrameLocationIterator.next();
             if (droppedFrameLocation.isFrame(item)) {
-                ItemStack invisibleRegularItemFrame = getInvisibleRegularItemFrame();
+                ItemStack invisibleRegularItemFrame = getRegularInvisibleItemFrame(1);
                 ItemMeta meta = invisibleRegularItemFrame.getItemMeta();
-                meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', itemDisplayName));
+                meta.displayName(Component.text(ChatColor.translateAlternateColorCodes('&', itemDisplayName)));
                 invisibleRegularItemFrame.setItemMeta(meta);
-                invisibleRegularItemFrame.setType(Material.ITEM_FRAME);
 
                 event.getEntity().setItemStack(invisibleRegularItemFrame);
 
@@ -135,8 +122,5 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
             }
         }
     }
-
-    private ItemStack getInvisibleRegularItemFrame() {
-        return template_invisible_regular_item_frame;
-    }
+    
 }
