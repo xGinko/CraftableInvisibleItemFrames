@@ -21,7 +21,7 @@ public class ItemUtils {
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             meta.addEnchant(Enchantment.CHANNELING, 1, true);
         }
-        meta.displayName(Component.text((ChatColor.translateAlternateColorCodes('&', CraftableInvisibleItemFrames.getLang(config.default_lang).glow_invisible_item_frame)));
+        meta.displayName(Component.text((ChatColor.translateAlternateColorCodes('&', CraftableInvisibleItemFrames.getLang(config.default_lang).glow_invisible_item_frame))));
         meta.getPersistentDataContainer().set(CraftableInvisibleItemFrames.getGlowsquidInvisibleItemFrameTag(), PersistentDataType.BYTE, (byte) 1);
         invisible_glowsquid_frame.setItemMeta(meta);
         return invisible_glowsquid_frame;
