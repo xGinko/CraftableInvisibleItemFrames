@@ -4,6 +4,7 @@ import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
 import me.xginko.craftableinvisibleitemframes.config.Config;
 import me.xginko.craftableinvisibleitemframes.modules.CraftableInvisibleItemFramesModule;
 import me.xginko.craftableinvisibleitemframes.utils.DroppedFrameLocation;
+import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Item;
@@ -110,7 +111,7 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
             if (droppedFrameLocation.isFrame(item)) {
                 ItemStack invisibleRegularItemFrame = getRegularInvisibleItemFrame(1);
                 ItemMeta meta = invisibleRegularItemFrame.getItemMeta();
-                meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', itemDisplayName));
+                meta.displayName(Component.text(ChatColor.translateAlternateColorCodes('&', itemDisplayName)));
                 invisibleRegularItemFrame.setItemMeta(meta);
 
                 event.getEntity().setItemStack(invisibleRegularItemFrame);
