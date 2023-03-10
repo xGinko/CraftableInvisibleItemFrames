@@ -79,12 +79,7 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
             }
 
             if (foundInvisibleRegularItemFrame && foundGlowInkSac) {
-                ItemStack invisibleGlowsquidItemFrame = ItemUtils.getGlowsquidInvisibleItemFrame(1);
-                ItemMeta meta = invisibleGlowsquidItemFrame.getItemMeta();
-                meta.displayName(Component.text(ChatColor.translateAlternateColorCodes('&', CraftableInvisibleItemFrames.getLang(player.locale()).glow_invisible_item_frame)));
-                invisibleGlowsquidItemFrame.setItemMeta(meta);
-
-                event.getInventory().setResult(invisibleGlowsquidItemFrame);
+                event.getInventory().setResult(ItemUtils.getGlowsquidInvisibleItemFrame(1, player.locale()));
             }
         } else {
             event.getInventory().setResult(null);
