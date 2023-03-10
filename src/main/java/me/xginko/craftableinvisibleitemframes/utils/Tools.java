@@ -12,7 +12,7 @@ public class Tools {
 
     public static Player getRandomNearbyPlayer(Location location) {
         List<Player> nearbyPlayers = new ArrayList<>();
-        for (Entity entity : location.getNearbyEntities(3, 3, 3)) {
+        for (Entity entity : location.getNearbyEntities(4, 4, 4)) {
             if (entity instanceof Player player) {
                 nearbyPlayers.add(player);
             }
