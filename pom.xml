@@ -51,8 +51,6 @@
                                     <artifact>*:*</artifact>
                                     <excludes>
                                         <exclude>META-INF/MANIFEST.MF</exclude>
-                                        <exclude>META-INF/LICENSE.txt</exclude>
-                                        <exclude>META-INF/NOTICE.txt</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
