@@ -4,7 +4,6 @@ import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
 import me.xginko.craftableinvisibleitemframes.config.Config;
 import me.xginko.craftableinvisibleitemframes.modules.CraftableInvisibleItemFramesModule;
 import me.xginko.craftableinvisibleitemframes.utils.DroppedFrameLocation;
-import me.xginko.craftableinvisibleitemframes.utils.ItemUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -26,7 +25,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import static me.xginko.craftableinvisibleitemframes.utils.Tools.getRandomNearbyPlayer;
+import static me.xginko.craftableinvisibleitemframes.utils.ItemUtils.getGlowsquidInvisibleItemFrame;
+import static me.xginko.craftableinvisibleitemframes.utils.ItemUtils.getRandomNearbyPlayer;
 
 public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFramesModule, Listener {
 
@@ -79,7 +79,7 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
             }
 
             if (foundInvisibleRegularItemFrame && foundGlowInkSac) {
-                event.getInventory().setResult(ItemUtils.getGlowsquidInvisibleItemFrame(1, player.locale()));
+                event.getInventory().setResult(getGlowsquidInvisibleItemFrame(1, player.locale()));
             }
         } else {
             event.getInventory().setResult(null);
@@ -143,11 +143,11 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
             itemDisplayName = CraftableInvisibleItemFrames.getLang(randomNearbyPlayer.locale()).glow_invisible_item_frame;
         }
 
-        Iterator<DroppedFrameLocation> iterator = droppedGlowsquidFrames.iterator();
-        while (iterator.hasNext()) {
-            DroppedFrameLocation droppedFrameLocation = iterator.next();
-            if(droppedFrameLocation.isFrame(item)) {
-                ItemStack invisibleGlowsquidItemFrame = ItemUtils.getGlowsquidInvisibleItemFrame(1);
+        Iterator<DroppedFrameLocation> droppedFrameLocationIterator = droppedGlowsquidFrames.iterator();
+        while (droppedFrameLocationIterator.hasNext()) {
+            DroppedFrameLocation droppedFrameLocation = droppedFrameLocationIterator.next();
+            if (droppedFrameLocation.isFrame(item)) {
+                ItemStack invisibleGlowsquidItemFrame = getGlowsquidInvisibleItemFrame(1);
                 ItemMeta meta = invisibleGlowsquidItemFrame.getItemMeta();
                 meta.displayName(Component.text(ChatColor.translateAlternateColorCodes('&', itemDisplayName)));
                 invisibleGlowsquidItemFrame.setItemMeta(meta);
@@ -155,7 +155,7 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
                 event.getEntity().setItemStack(invisibleGlowsquidItemFrame);
 
                 droppedFrameLocation.getRemoval().cancel();
-                iterator.remove();
+                droppedFrameLocationIterator.remove();
                 break;
             }
         }

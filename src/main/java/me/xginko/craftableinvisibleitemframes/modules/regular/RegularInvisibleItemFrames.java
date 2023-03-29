@@ -25,7 +25,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import static me.xginko.craftableinvisibleitemframes.utils.ItemUtils.getRegularInvisibleItemFrame;
-import static me.xginko.craftableinvisibleitemframes.utils.Tools.getRandomNearbyPlayer;
+import static me.xginko.craftableinvisibleitemframes.utils.ItemUtils.getRandomNearbyPlayer;
 
 public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesModule, Listener {
 
