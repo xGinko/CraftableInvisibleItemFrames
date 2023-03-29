@@ -84,12 +84,12 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
             String version = regexMatcher.group(1);
             minorMCVersion = Integer.parseInt(version);
             logger.info("Detected Version 1." + minorMCVersion);
-            if (minorMCVersion < 13) {
+            if (minorMCVersion < 16) {
                 logger.warning("##########################################################");
                 logger.warning("#                                                        #");
                 logger.warning("#                         WARNING                        #");
                 logger.warning("#                                                        #");
-                logger.warning("#    This plugin was made for Minecraft Versions 1.13    #");
+                logger.warning("#    This plugin was made for Minecraft Versions 1.16    #");
                 logger.warning("#                         and up.                        #");
                 logger.warning("#                                                        #");
                 logger.warning("##########################################################");
