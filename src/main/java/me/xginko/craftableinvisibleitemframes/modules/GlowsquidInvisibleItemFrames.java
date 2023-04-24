@@ -1,8 +1,7 @@
-package me.xginko.craftableinvisibleitemframes.modules.glowsquid;
+package me.xginko.craftableinvisibleitemframes.modules;
 
 import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
 import me.xginko.craftableinvisibleitemframes.config.Config;
-import me.xginko.craftableinvisibleitemframes.modules.CraftableInvisibleItemFramesModule;
 import me.xginko.craftableinvisibleitemframes.utils.DroppedFrameLocation;
 import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
@@ -13,10 +12,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -34,7 +35,7 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
     private final Config config;
     private final HashSet<DroppedFrameLocation> droppedGlowsquidFrames = new HashSet<>();
 
-    public GlowsquidInvisibleItemFrames() {
+    protected GlowsquidInvisibleItemFrames() {
         this.plugin = CraftableInvisibleItemFrames.getInstance();
         this.config = CraftableInvisibleItemFrames.getConfiguration();
     }
@@ -53,36 +54,37 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
     private void onCraft(PrepareItemCraftEvent event) {
         if (CraftableInvisibleItemFrames.isInvisibleRegularFrameRecipe(event.getRecipe())) return;
 
-        Player player = (Player) event.getView().getPlayer();
-        if (player.hasPermission("craftableinvisibleitemframes.craft")) {
-            boolean foundInvisibleRegularItemFrame = false;
-            boolean foundGlowInkSac = false;
-            for (ItemStack item : event.getInventory().getMatrix()) {
-                if (item == null || item.getType().equals(Material.AIR)) continue;
+        if (event.getView().getPlayer() instanceof Player player) {
+            if (!player.hasPermission("craftableinvisibleitemframes.craft")) {
+                event.getInventory().setResult(null);
+            } else {
+                boolean foundInvisibleRegularItemFrame = false;
+                boolean foundGlowInkSac = false;
+                for (ItemStack item : event.getInventory().getMatrix()) {
+                    if (item == null || item.getType().equals(Material.AIR)) continue;
 
-                if (item.getType().equals(Material.GLOW_INK_SAC)) {
-                    if (foundGlowInkSac) return;
-                    foundGlowInkSac = true;
-                    continue;
-                }
-
-                if (item.getType().equals(Material.ITEM_FRAME)) {
-                    if (item.getItemMeta().getPersistentDataContainer().has(CraftableInvisibleItemFrames.getRegularInvisibleItemFrameTag(), PersistentDataType.BYTE)) {
-                        if (foundInvisibleRegularItemFrame) return;
-                        foundInvisibleRegularItemFrame = true;
+                    if (item.getType().equals(Material.GLOW_INK_SAC)) {
+                        if (foundGlowInkSac) return;
+                        foundGlowInkSac = true;
                         continue;
                     }
+
+                    if (item.getType().equals(Material.ITEM_FRAME)) {
+                        if (item.getItemMeta().getPersistentDataContainer().has(CraftableInvisibleItemFrames.getRegularInvisibleItemFrameTag(), PersistentDataType.BYTE)) {
+                            if (foundInvisibleRegularItemFrame) return;
+                            foundInvisibleRegularItemFrame = true;
+                            continue;
+                        }
+                    }
+
+                    // Item isn't what we're looking for
+                    return;
                 }
 
-                // Item isn't what we're looking for
-                return;
+                if (foundInvisibleRegularItemFrame && foundGlowInkSac) {
+                    event.getInventory().setResult(getGlowsquidInvisibleItemFrame(1, player.locale()));
+                }
             }
-
-            if (foundInvisibleRegularItemFrame && foundGlowInkSac) {
-                event.getInventory().setResult(getGlowsquidInvisibleItemFrame(1, player.locale()));
-            }
-        } else {
-            event.getInventory().setResult(null);
         }
     }
 
@@ -161,4 +163,35 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
         }
     }
 
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    private void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+        if (event.getRightClicked() instanceof GlowItemFrame glowItemFrame) {
+            if (
+                    glowItemFrame.getPersistentDataContainer().has(CraftableInvisibleItemFrames.getGlowsquidInvisibleItemFrameTag(), PersistentDataType.BYTE)
+            ) {
+                plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                    if (!glowItemFrame.getItem().getType().equals(Material.AIR)) {
+                        glowItemFrame.setGlowing(false);
+                        glowItemFrame.setVisible(false);
+                    }
+                }, 1L);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    private void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (event.getEntity() instanceof GlowItemFrame glowItemFrame) {
+            if (
+                    glowItemFrame.getPersistentDataContainer().has(CraftableInvisibleItemFrames.getGlowsquidInvisibleItemFrameTag(), PersistentDataType.BYTE)
+            ) {
+                plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                    if (glowItemFrame.getItem().getType().equals(Material.AIR)) {
+                        if (config.glowsquid_placed_item_frames_have_glowing_outlines) glowItemFrame.setGlowing(true);
+                        glowItemFrame.setVisible(true);
+                    }
+                }, 1L);
+            }
+        }
+    }
 }

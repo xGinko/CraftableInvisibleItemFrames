@@ -1,7 +1,6 @@
-package me.xginko.craftableinvisibleitemframes.modules.regular;
+package me.xginko.craftableinvisibleitemframes.modules;
 
 import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
-import me.xginko.craftableinvisibleitemframes.modules.CraftableInvisibleItemFramesModule;
 import me.xginko.craftableinvisibleitemframes.utils.ItemUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,7 +10,7 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent;
 
 public class TranslateCraftingSuggestion implements CraftableInvisibleItemFramesModule, Listener {
 
-    public TranslateCraftingSuggestion() {}
+    protected TranslateCraftingSuggestion() {}
 
     @Override
     public void enable() {

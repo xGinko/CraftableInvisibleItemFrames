@@ -4,6 +4,7 @@ import me.xginko.craftableinvisibleitemframes.commands.CraftableInvisibleItemFra
 import me.xginko.craftableinvisibleitemframes.config.Config;
 import me.xginko.craftableinvisibleitemframes.config.LanguageCache;
 import me.xginko.craftableinvisibleitemframes.modules.CraftableInvisibleItemFramesModule;
+import net.kyori.adventure.text.Component;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -53,10 +54,8 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         logger.info("                                                    ");
 
         // Detect Minecraft version.
-        // Returns 12, if minecraft version is 1.12.x, 19 if version is 1.19.x, and so on.
-        Pattern MINECRAFT_VERSION_MATCHER = Pattern.compile("\\(MC: \\d\\.(\\d+)(?:\\.\\d+)?\\)");
-        Matcher regexMatcher = MINECRAFT_VERSION_MATCHER.matcher(getServer().getVersion());
-        if (!regexMatcher.find()) {
+        Matcher versionMatcher = Pattern.compile("\\(MC: \\d\\.(\\d+)(?:\\.\\d+)?\\)").matcher(getServer().getVersion());
+        if (!versionMatcher.find()) {
             logger.severe("############################################################");
             logger.severe("#                                                          #");
             logger.severe("#                          ERROR                           #");
@@ -68,7 +67,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
             logger.severe("#  An error occurred while trying to determine the game's  #");
             logger.severe("#  version. Because some features of this plugin rely on   #");
             logger.severe("#    on knowing the version, an error while parsing the    #");
-            logger.severe("#              value would make it unstable.               #");
+            logger.severe("#              value could make it unstable.               #");
             logger.severe("#       For this reason the plugin will disable now.       #");
             logger.severe("#                                                          #");
             logger.severe("############################################################");
@@ -81,8 +80,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         } else {
-            String version = regexMatcher.group(1);
-            minorMCVersion = Integer.parseInt(version);
+            minorMCVersion = Integer.parseInt(versionMatcher.group(1));
             logger.info("Detected Version 1." + minorMCVersion);
             if (minorMCVersion < 16) {
                 logger.warning("##########################################################");
@@ -171,7 +169,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             meta.addEnchant(Enchantment.BINDING_CURSE, 1, true);
         }
-        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', getLang(config.default_lang).invisible_item_frame));
+        meta.displayName(Component.text(ChatColor.translateAlternateColorCodes('&', getLang(config.default_lang).invisible_item_frame)));
         meta.getPersistentDataContainer().set(TAG_regular_invisible_item_frame, PersistentDataType.BYTE, (byte) 1);
         invisible_regular_item_frame.setItemMeta(meta);
         invisible_regular_item_frame.setAmount(8);

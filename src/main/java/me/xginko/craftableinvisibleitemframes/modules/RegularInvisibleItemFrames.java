@@ -1,8 +1,7 @@
-package me.xginko.craftableinvisibleitemframes.modules.regular;
+package me.xginko.craftableinvisibleitemframes.modules;
 
 import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
 import me.xginko.craftableinvisibleitemframes.config.Config;
-import me.xginko.craftableinvisibleitemframes.modules.CraftableInvisibleItemFramesModule;
 import me.xginko.craftableinvisibleitemframes.utils.DroppedFrameLocation;
 import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
@@ -13,9 +12,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -24,8 +25,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import static me.xginko.craftableinvisibleitemframes.utils.ItemUtils.getRegularInvisibleItemFrame;
 import static me.xginko.craftableinvisibleitemframes.utils.ItemUtils.getRandomNearbyPlayer;
+import static me.xginko.craftableinvisibleitemframes.utils.ItemUtils.getRegularInvisibleItemFrame;
 
 public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesModule, Listener {
 
@@ -33,7 +34,7 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
     private final Config config;
     private final HashSet<DroppedFrameLocation> droppedRegularFrames = new HashSet<>();
 
-    public RegularInvisibleItemFrames() {
+    protected RegularInvisibleItemFrames() {
         this.plugin = CraftableInvisibleItemFrames.getInstance();
         this.config = CraftableInvisibleItemFrames.getConfiguration();
     }
@@ -58,20 +59,25 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
                 itemFrameInHand = player.getInventory().getItemInMainHand();
             } else if (player.getInventory().getItemInOffHand().getType().equals(Material.ITEM_FRAME)) {
                 itemFrameInHand = player.getInventory().getItemInOffHand();
-            } else return;
+            } else {
+                return;
+            }
 
             // If the frame item has the invisible tag, make the placed item frame invisible
             if (!itemFrameInHand.getItemMeta().getPersistentDataContainer().has(CraftableInvisibleItemFrames.getRegularInvisibleItemFrameTag(), PersistentDataType.BYTE)) return;
+
             if (!player.hasPermission("craftableinvisibleitemframes.place")) {
                 event.setCancelled(true);
                 return;
             }
+
             if (config.regular_placed_item_frames_have_glowing_outlines) {
                 itemFrameEntity.setVisible(true);
                 itemFrameEntity.setGlowing(true);
             } else {
                 itemFrameEntity.setVisible(false);
             }
+
             itemFrameEntity.getPersistentDataContainer().set(CraftableInvisibleItemFrames.getRegularInvisibleItemFrameTag(), PersistentDataType.BYTE, (byte) 1);
         }
     }
@@ -122,5 +128,36 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
             }
         }
     }
-    
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    private void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+        if (event.getRightClicked() instanceof ItemFrame itemFrame) {
+            if (
+                    itemFrame.getPersistentDataContainer().has(CraftableInvisibleItemFrames.getRegularInvisibleItemFrameTag(), PersistentDataType.BYTE)
+            ) {
+                plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                    if (!itemFrame.getItem().getType().equals(Material.AIR)) {
+                        itemFrame.setGlowing(false);
+                        itemFrame.setVisible(false);
+                    }
+                }, 1L);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    private void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (event.getEntity() instanceof ItemFrame itemFrame) {
+            if (
+                    itemFrame.getPersistentDataContainer().has(CraftableInvisibleItemFrames.getRegularInvisibleItemFrameTag(), PersistentDataType.BYTE)
+            ) {
+                plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                    if (itemFrame.getItem().getType().equals(Material.AIR)) {
+                        if (config.regular_placed_item_frames_have_glowing_outlines) itemFrame.setGlowing(true);
+                        itemFrame.setVisible(true);
+                    }
+                }, 1L);
+            }
+        }
+    }
 }
