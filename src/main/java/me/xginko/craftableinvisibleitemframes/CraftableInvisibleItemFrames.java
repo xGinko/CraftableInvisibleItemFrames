@@ -4,20 +4,18 @@ import me.xginko.craftableinvisibleitemframes.commands.CraftableInvisibleItemFra
 import me.xginko.craftableinvisibleitemframes.config.Config;
 import me.xginko.craftableinvisibleitemframes.config.LanguageCache;
 import me.xginko.craftableinvisibleitemframes.modules.CraftableInvisibleItemFramesModule;
-import net.kyori.adventure.text.Component;
+import me.xginko.craftableinvisibleitemframes.utils.ItemUtils;
 import org.bstats.bukkit.Metrics;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.*;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.RecipeChoice;
+import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
@@ -163,17 +161,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
 
     public void reloadRecipe() {
         removeRecipe(RECIPE_regular_invisible_item_frame);
-        ItemStack invisible_regular_item_frame = new ItemStack(Material.ITEM_FRAME, 1);
-        ItemMeta meta = invisible_regular_item_frame.getItemMeta();
-        if (config.regular_item_frames_should_be_enchanted) {
-            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            meta.addEnchant(Enchantment.BINDING_CURSE, 1, true);
-        }
-        meta.displayName(Component.text(ChatColor.translateAlternateColorCodes('&', getLang(config.default_lang).invisible_item_frame)));
-        meta.getPersistentDataContainer().set(TAG_regular_invisible_item_frame, PersistentDataType.BYTE, (byte) 1);
-        invisible_regular_item_frame.setItemMeta(meta);
-        invisible_regular_item_frame.setAmount(8);
-        ShapedRecipe invisRecipe = new ShapedRecipe(RECIPE_regular_invisible_item_frame, invisible_regular_item_frame);
+        ShapedRecipe invisRecipe = new ShapedRecipe(RECIPE_regular_invisible_item_frame, ItemUtils.getRegularInvisibleItemFrame(8));
         invisRecipe.shape("FFF", "FPF", "FFF");
         invisRecipe.setIngredient('F', Material.ITEM_FRAME);
         invisRecipe.setIngredient('P', new RecipeChoice.ExactChoice(config.recipe_center_items));
