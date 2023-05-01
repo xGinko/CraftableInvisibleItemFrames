@@ -28,8 +28,9 @@ public class TranslateItemStacks implements CraftableInvisibleItemFramesModule, 
 
     protected TranslateItemStacks() {
         for (Map.Entry<String, LanguageCache> languageCacheEntry : CraftableInvisibleItemFrames.getLanguageCacheMap().entrySet()) {
-            availableItemTranslations.add(ChatColor.translateAlternateColorCodes('&', languageCacheEntry.getValue().invisible_item_frame));
-            availableItemTranslations.add(ChatColor.translateAlternateColorCodes('&', languageCacheEntry.getValue().glow_invisible_item_frame));
+            LanguageCache languageCache = languageCacheEntry.getValue();
+            if (languageCache.invisible_item_frame != null) availableItemTranslations.add(ChatColor.translateAlternateColorCodes('&', languageCache.invisible_item_frame));
+            if (languageCache.glow_invisible_item_frame != null) availableItemTranslations.add(ChatColor.translateAlternateColorCodes('&', languageCacheEntry.getValue().glow_invisible_item_frame));
         }
         // valueOf since we want to keep things backwards compatible
         try {
