@@ -3,8 +3,7 @@ package me.xginko.craftableinvisibleitemframes.modules;
 import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
 import me.xginko.craftableinvisibleitemframes.config.Config;
 import me.xginko.craftableinvisibleitemframes.utils.DroppedFrameLocation;
-import net.kyori.adventure.text.Component;
-import org.bukkit.ChatColor;
+import me.xginko.craftableinvisibleitemframes.utils.ItemUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.ItemFrame;
@@ -17,16 +16,11 @@ import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
 import java.util.Iterator;
-
-import static me.xginko.craftableinvisibleitemframes.utils.ItemUtils.getRandomNearbyPlayer;
-import static me.xginko.craftableinvisibleitemframes.utils.ItemUtils.getRegularInvisibleItemFrame;
 
 public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesModule, Listener {
 
@@ -53,32 +47,24 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
     private void onHangingPlace(HangingPlaceEvent event) {
         Player player = event.getPlayer();
         if (player != null && event.getEntity() instanceof ItemFrame itemFrameEntity) {
-            // Get the frame item that the player placed
-            ItemStack itemFrameInHand;
-            if (player.getInventory().getItemInMainHand().getType().equals(Material.ITEM_FRAME)) {
-                itemFrameInHand = player.getInventory().getItemInMainHand();
-            } else if (player.getInventory().getItemInOffHand().getType().equals(Material.ITEM_FRAME)) {
-                itemFrameInHand = player.getInventory().getItemInOffHand();
-            } else {
-                return;
+            if (
+                    ItemUtils.isRegularInvisibleItemFrame(player.getInventory().getItemInMainHand())
+                    || ItemUtils.isRegularInvisibleItemFrame(player.getInventory().getItemInOffHand())
+            ) {
+                if (!player.hasPermission("craftableinvisibleitemframes.place")) {
+                    event.setCancelled(true);
+                    return;
+                }
+
+                if (config.regular_placed_item_frames_have_glowing_outlines) {
+                    itemFrameEntity.setVisible(true);
+                    itemFrameEntity.setGlowing(true);
+                } else {
+                    itemFrameEntity.setVisible(false);
+                }
+
+                itemFrameEntity.getPersistentDataContainer().set(CraftableInvisibleItemFrames.getRegularInvisibleItemFrameTag(), PersistentDataType.BYTE, (byte) 1);
             }
-
-            // If the frame item has the invisible tag, make the placed item frame invisible
-            if (!itemFrameInHand.getItemMeta().getPersistentDataContainer().has(CraftableInvisibleItemFrames.getRegularInvisibleItemFrameTag(), PersistentDataType.BYTE)) return;
-
-            if (!player.hasPermission("craftableinvisibleitemframes.place")) {
-                event.setCancelled(true);
-                return;
-            }
-
-            if (config.regular_placed_item_frames_have_glowing_outlines) {
-                itemFrameEntity.setVisible(true);
-                itemFrameEntity.setGlowing(true);
-            } else {
-                itemFrameEntity.setVisible(false);
-            }
-
-            itemFrameEntity.getPersistentDataContainer().set(CraftableInvisibleItemFrames.getRegularInvisibleItemFrameTag(), PersistentDataType.BYTE, (byte) 1);
         }
     }
 
@@ -100,28 +86,14 @@ public class RegularInvisibleItemFrames implements CraftableInvisibleItemFramesM
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     private void onItemSpawn(ItemSpawnEvent event) {
-        Item item = event.getEntity();
-        if (!item.getItemStack().getType().equals(Material.ITEM_FRAME)) return;
-
-        String itemDisplayName;
-        Player randomNearbyPlayer = getRandomNearbyPlayer(item.getLocation());
-        if (randomNearbyPlayer == null) {
-            itemDisplayName = CraftableInvisibleItemFrames.getLang(config.default_lang).invisible_item_frame;
-        } else {
-            itemDisplayName = CraftableInvisibleItemFrames.getLang(randomNearbyPlayer.locale()).invisible_item_frame;
-        }
+        Item itemEntity = event.getEntity();
+        if (!itemEntity.getItemStack().getType().equals(Material.ITEM_FRAME)) return;
 
         Iterator<DroppedFrameLocation> droppedFrameLocationIterator = droppedRegularFrames.iterator();
         while (droppedFrameLocationIterator.hasNext()) {
             DroppedFrameLocation droppedFrameLocation = droppedFrameLocationIterator.next();
-            if (droppedFrameLocation.isFrame(item)) {
-                ItemStack invisibleRegularItemFrame = getRegularInvisibleItemFrame(1);
-                ItemMeta meta = invisibleRegularItemFrame.getItemMeta();
-                meta.displayName(Component.text(ChatColor.translateAlternateColorCodes('&', itemDisplayName)));
-                invisibleRegularItemFrame.setItemMeta(meta);
-
-                event.getEntity().setItemStack(invisibleRegularItemFrame);
-
+            if (droppedFrameLocation.isFrame(itemEntity)) {
+                itemEntity.setItemStack(ItemUtils.getRegularInvisibleItemFrame(1, ItemUtils.getRandomNearbyPlayerLocaleOrDefault(itemEntity.getLocation())));
                 droppedFrameLocation.getRemoval().cancel();
                 droppedFrameLocationIterator.remove();
                 break;

@@ -7,14 +7,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.Random;
 
@@ -40,6 +38,15 @@ public class ItemUtils {
         return localed_invisible_glowsquid_frame;
     }
 
+    public static boolean isGlowsquidInvisibleItemFrame(ItemStack itemStack) {
+        if (itemStack == null) return false;
+        if (itemStack.getType().equals(Material.ITEM_FRAME)) {
+            return itemStack.getItemMeta().getPersistentDataContainer().has(CraftableInvisibleItemFrames.getGlowsquidInvisibleItemFrameTag());
+        } else {
+            return false;
+        }
+    }
+
     public static ItemStack getRegularInvisibleItemFrame(int amount) {
         ItemStack invisible_regular_item_frame = new ItemStack(Material.ITEM_FRAME, amount);
         invisible_regular_item_frame.editMeta(meta -> {
@@ -60,13 +67,17 @@ public class ItemUtils {
         return localed_invisible_regular_item_frame;
     }
 
-    public static Player getRandomNearbyPlayer(Location location) {
-        List<Player> nearbyPlayers = new ArrayList<>();
-        for (Entity entity : location.getNearbyEntities(4, 4, 4)) {
-            if (entity instanceof Player player) {
-                nearbyPlayers.add(player);
-            }
+    public static boolean isRegularInvisibleItemFrame(ItemStack itemStack) {
+        if (itemStack == null) return false;
+        if (itemStack.getType().equals(Material.ITEM_FRAME)) {
+            return itemStack.getItemMeta().getPersistentDataContainer().has(CraftableInvisibleItemFrames.getRegularInvisibleItemFrameTag());
+        } else {
+            return false;
         }
-        return nearbyPlayers.isEmpty() ? null : nearbyPlayers.get(new Random().nextInt(nearbyPlayers.size()));
+    }
+
+    public static Locale getRandomNearbyPlayerLocaleOrDefault(Location location) {
+        Collection<Player> nearbyPlayers = location.getNearbyPlayers(4,4,4);
+        return nearbyPlayers.isEmpty() ? CraftableInvisibleItemFrames.getConfiguration().default_lang : nearbyPlayers.stream().toList().get(new Random().nextInt(nearbyPlayers.size())).locale();
     }
 }
