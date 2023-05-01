@@ -51,15 +51,30 @@ public class GlowsquidInvisibleItemFrames implements CraftableInvisibleItemFrame
         if (CraftableInvisibleItemFrames.isInvisibleRegularFrameRecipe(event.getRecipe())) return;
         if (!(event.getView().getPlayer() instanceof Player player)) return;
 
+        boolean foundInvisIframe = false;
+        boolean foundGlowIncSac = false;
         CraftingInventory craftingInventory = event.getInventory();
-        if (!(craftingInventory.contains(Material.GLOW_INK_SAC) && craftingInventory.contains(Material.ITEM_FRAME))) return;
-
-        for (ItemStack itemStack : craftingInventory.getMatrix()) {
-            if (!ItemUtils.isRegularInvisibleItemFrame(itemStack)) continue;
-            if (player.hasPermission("craftableinvisibleitemframes.craft")) {
-                craftingInventory.setResult(ItemUtils.getGlowsquidInvisibleItemFrame(1, player.locale()));
+        for (ItemStack item : craftingInventory.getMatrix()) {
+            if (item == null || item.getType().equals(Material.AIR)) continue;
+            if (item.getType().equals(Material.GLOW_INK_SAC)) {
+                if (foundGlowIncSac) return;
+                foundGlowIncSac = true;
+                continue;
+            }
+            if (ItemUtils.isRegularInvisibleItemFrame(item)) {
+                if (foundInvisIframe) return;
+                foundInvisIframe = true;
+                continue;
             }
             return;
+        }
+
+        if (foundInvisIframe && foundGlowIncSac) {
+            if (player.hasPermission("craftableinvisibleitemframes.craft")) {
+                craftingInventory.setResult(ItemUtils.getGlowsquidInvisibleItemFrame(1, player.locale()));
+            } else {
+                craftingInventory.setResult(null);
+            }
         }
     }
 
