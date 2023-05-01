@@ -26,16 +26,12 @@ public class VersionSubCommand extends SubCommand {
     @Override
     public void perform(CommandSender sender, String[] args) {
         if (sender.hasPermission("craftableinvisibleitemframes.cmd.version")) {
-            sender.sendMessage("\n");
-            sender.sendMessage(
+            sender.sendMessage(Component.text(
                     ChatColor.WHITE+"CraftableInvisibleItemFrames v"+CraftableInvisibleItemFrames.getInstance().getDescription().getVersion()+
                             ChatColor.WHITE+" by "+ChatColor.AQUA+"xGinko"
-            );
-            sender.sendMessage("\n");
-        } else {
-            sender.sendMessage(Component.text(
-                    ChatColor.translateAlternateColorCodes('&', CraftableInvisibleItemFrames.getLang(sender).noPermission)
             ));
+        } else {
+            sender.sendMessage(CraftableInvisibleItemFrames.getLang(sender).noPermission);
         }
     }
 }

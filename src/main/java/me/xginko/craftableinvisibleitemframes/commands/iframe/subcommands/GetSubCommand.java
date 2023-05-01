@@ -7,8 +7,6 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 public class GetSubCommand extends SubCommand {
     @Override
@@ -30,19 +28,13 @@ public class GetSubCommand extends SubCommand {
     public void perform(CommandSender sender, String[] args) {
         if (sender.hasPermission("craftableinvisibleitemframes.cmd.get")) {
             if (sender instanceof Player player) {
-                ItemStack invisible_regular_item_frame = ItemUtils.getRegularInvisibleItemFrame(8);
-                ItemMeta meta = invisible_regular_item_frame.getItemMeta();
-                meta.displayName(Component.text(ChatColor.translateAlternateColorCodes('&', CraftableInvisibleItemFrames.getLang(sender).invisible_item_frame)));
-                invisible_regular_item_frame.setItemMeta(meta);
-                player.getInventory().addItem(invisible_regular_item_frame);
-                player.sendMessage(Component.text(ChatColor.GREEN + "Added an invisible item frame to your inventory"));
+                ItemUtils.addToInventoryOrDrop(player, ItemUtils.getRegularInvisibleItemFrame(8, player.locale()));
+                player.sendMessage(Component.text(ChatColor.GREEN + "You received 8 invisible itemframes."));
             } else {
                 sender.sendMessage(Component.text(ChatColor.RED + "Command can't be executed from console."));
             }
         } else {
-            sender.sendMessage(Component.text(
-                    ChatColor.translateAlternateColorCodes('&', CraftableInvisibleItemFrames.getLang(sender).noPermission)
-            ));
+            sender.sendMessage(CraftableInvisibleItemFrames.getLang(sender).noPermission);
         }
     }
 }

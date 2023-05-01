@@ -2,6 +2,7 @@ package me.xginko.craftableinvisibleitemframes.commands.iframe.subcommands;
 
 import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
 import me.xginko.craftableinvisibleitemframes.commands.SubCommand;
+import me.xginko.craftableinvisibleitemframes.config.Config;
 import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -32,9 +33,10 @@ public class RemoveItemSubCommand extends SubCommand {
             if (sender instanceof Player player) {
                 ItemStack itemPlayerIsHolding = player.getInventory().getItemInMainHand();
                 if (!itemPlayerIsHolding.getType().equals(Material.AIR)) {
-                    if (CraftableInvisibleItemFrames.getConfiguration().recipe_center_items.contains(itemPlayerIsHolding)) {
-                        CraftableInvisibleItemFrames.getConfiguration().removeFromRecipeCenterItems(itemPlayerIsHolding);
-                        player.sendMessage(Component.text(ChatColor.GREEN + "Removed "+itemPlayerIsHolding.getAmount()+"x "+itemPlayerIsHolding.getType().name()+" from the recipe center items."));
+                    Config config = CraftableInvisibleItemFrames.getConfiguration();
+                    if (config.recipe_center_items.contains(itemPlayerIsHolding)) {
+                        config.removeFromRecipeCenterItems(itemPlayerIsHolding);
+                        player.sendMessage(Component.text(ChatColor.GREEN + "Removed "+itemPlayerIsHolding.getAmount()+"x "+itemPlayerIsHolding.getType().name()+" from the possible recipe center items."));
                     } else {
                         player.sendMessage(Component.text(ChatColor.RED + "Item has not been added to the center recipes yet!"));
                     }
@@ -45,9 +47,7 @@ public class RemoveItemSubCommand extends SubCommand {
                 sender.sendMessage(Component.text(ChatColor.RED + "Command can't be executed from console."));
             }
         } else {
-            sender.sendMessage(Component.text(
-                    ChatColor.translateAlternateColorCodes('&', CraftableInvisibleItemFrames.getLang(sender).noPermission)
-            ));
+            sender.sendMessage(CraftableInvisibleItemFrames.getLang(sender).noPermission);
         }
     }
 }

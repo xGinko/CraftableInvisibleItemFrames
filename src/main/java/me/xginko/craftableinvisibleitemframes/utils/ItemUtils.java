@@ -26,7 +26,7 @@ public class ItemUtils {
                 meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                 meta.addEnchant(Enchantment.CHANNELING, 1, true);
             }
-            meta.displayName(Component.text((ChatColor.translateAlternateColorCodes('&', CraftableInvisibleItemFrames.getLang(config.default_lang).glow_invisible_item_frame))));
+            meta.displayName(CraftableInvisibleItemFrames.getLang(config.default_lang).glow_invisible_item_frame);
             meta.getPersistentDataContainer().set(CraftableInvisibleItemFrames.getGlowsquidInvisibleItemFrameTag(), PersistentDataType.BYTE, (byte) 1);
         });
         return invisible_glowsquid_frame;
@@ -34,7 +34,7 @@ public class ItemUtils {
 
     public static ItemStack getGlowsquidInvisibleItemFrame(int amount, Locale locale) {
         ItemStack localed_invisible_glowsquid_frame = getGlowsquidInvisibleItemFrame(amount);
-        localed_invisible_glowsquid_frame.editMeta(meta -> meta.displayName(Component.text((ChatColor.translateAlternateColorCodes('&', CraftableInvisibleItemFrames.getLang(locale).glow_invisible_item_frame)))));
+        localed_invisible_glowsquid_frame.editMeta(meta -> meta.displayName(CraftableInvisibleItemFrames.getLang(locale).glow_invisible_item_frame));
         return localed_invisible_glowsquid_frame;
     }
 
@@ -55,7 +55,7 @@ public class ItemUtils {
                 meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                 meta.addEnchant(Enchantment.CHANNELING, 1, true);
             }
-            meta.displayName(Component.text(ChatColor.translateAlternateColorCodes('&', CraftableInvisibleItemFrames.getLang(config.default_lang).invisible_item_frame)));
+            meta.displayName(CraftableInvisibleItemFrames.getLang(config.default_lang).invisible_item_frame);
             meta.getPersistentDataContainer().set(CraftableInvisibleItemFrames.getRegularInvisibleItemFrameTag(), PersistentDataType.BYTE, (byte) 1);
         });
         return invisible_regular_item_frame;
@@ -79,5 +79,9 @@ public class ItemUtils {
     public static Locale getRandomNearbyPlayerLocaleOrDefault(Location location) {
         Collection<Player> nearbyPlayers = location.getNearbyPlayers(4,4,4);
         return nearbyPlayers.isEmpty() ? CraftableInvisibleItemFrames.getConfiguration().default_lang : nearbyPlayers.stream().toList().get(new Random().nextInt(nearbyPlayers.size())).locale();
+    }
+
+    public static void addToInventoryOrDrop(Player player, ItemStack item) {
+        player.getInventory().addItem(item).forEach((index, itemsThatDidNotFit) -> player.getWorld().dropItemNaturally(player.getLocation(), itemsThatDidNotFit).setPickupDelay(0));
     }
 }

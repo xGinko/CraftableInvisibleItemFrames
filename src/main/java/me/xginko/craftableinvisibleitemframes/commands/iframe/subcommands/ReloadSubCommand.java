@@ -29,9 +29,7 @@ public class ReloadSubCommand extends SubCommand {
             CraftableInvisibleItemFrames.getInstance().reloadPlugin();
             sender.sendMessage(Component.text(ChatColor.GREEN + "Reload complete."));
         } else {
-            sender.sendMessage(Component.text(
-                    ChatColor.translateAlternateColorCodes('&', CraftableInvisibleItemFrames.getLang(sender).noPermission)
-            ));
+            sender.sendMessage(CraftableInvisibleItemFrames.getLang(sender).noPermission);
         }
     }
 }

@@ -1,6 +1,8 @@
 package me.xginko.craftableinvisibleitemframes.config;
 
 import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
+import net.kyori.adventure.text.Component;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -12,7 +14,7 @@ public class LanguageCache {
 
     private final FileConfiguration fileConfiguration;
     boolean addedMissing = false;
-    public String noPermission, invisible_item_frame, glow_invisible_item_frame;
+    public Component noPermission, invisible_item_frame, glow_invisible_item_frame;
 
     public LanguageCache(String lang) {
         CraftableInvisibleItemFrames plugin = CraftableInvisibleItemFrames.getInstance();
@@ -26,12 +28,9 @@ public class LanguageCache {
         try {
             fileConfiguration.load(langFile);
 
-            // No Permission
-            this.noPermission = getStringTranslation("no-permission", "&cYou don't have permission to use this command.");
-            // Not on the ceiling
-            this.invisible_item_frame = getStringTranslation("invisible-itemframe", "&fInvisible Item Frame");
-            this.glow_invisible_item_frame = getStringTranslation("glow-invisible-itemframe", "&fGlow Invisible Item Frame");
-
+            this.noPermission = Component.text(ChatColor.translateAlternateColorCodes('&', getStringTranslation("no-permission", "&cYou don't have permission to use this command.")));
+            this.invisible_item_frame = Component.text(ChatColor.translateAlternateColorCodes('&', getStringTranslation("invisible-itemframe", "&fInvisible Item Frame")));
+            this.glow_invisible_item_frame = Component.text(ChatColor.translateAlternateColorCodes('&', getStringTranslation("glow-invisible-itemframe", "&fGlow Invisible Item Frame")));
 
             if (addedMissing) fileConfiguration.save(langFile);
         } catch (IOException e) {
