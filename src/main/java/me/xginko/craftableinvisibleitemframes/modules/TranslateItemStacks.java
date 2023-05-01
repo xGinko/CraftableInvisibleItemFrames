@@ -4,7 +4,6 @@ import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
 import me.xginko.craftableinvisibleitemframes.config.Config;
 import me.xginko.craftableinvisibleitemframes.config.LanguageCache;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -23,14 +22,16 @@ import java.util.Objects;
 
 public class TranslateItemStacks implements CraftableInvisibleItemFramesModule, Listener {
 
-    private final HashSet<String> availableItemTranslations = new HashSet<>();
+    private final HashSet<Component> availableItemTranslations = new HashSet<>();
     private final HashSet<Material> frameMaterials = new HashSet<>();
 
     protected TranslateItemStacks() {
         for (Map.Entry<String, LanguageCache> languageCacheEntry : CraftableInvisibleItemFrames.getLanguageCacheMap().entrySet()) {
             LanguageCache languageCache = languageCacheEntry.getValue();
-            if (languageCache.invisible_item_frame != null) availableItemTranslations.add(ChatColor.translateAlternateColorCodes('&', languageCache.invisible_item_frame));
-            if (languageCache.glow_invisible_item_frame != null) availableItemTranslations.add(ChatColor.translateAlternateColorCodes('&', languageCacheEntry.getValue().glow_invisible_item_frame));
+            if (languageCache.invisible_item_frame != null)
+                availableItemTranslations.add(Component.text(ChatColor.translateAlternateColorCodes('&', languageCache.invisible_item_frame)));
+            if (languageCache.glow_invisible_item_frame != null)
+                availableItemTranslations.add(Component.text(ChatColor.translateAlternateColorCodes('&', languageCacheEntry.getValue().glow_invisible_item_frame)));
         }
         // valueOf since we want to keep things backwards compatible
         try {
@@ -57,14 +58,14 @@ public class TranslateItemStacks implements CraftableInvisibleItemFramesModule, 
 
         ItemMeta meta = itemStack.getItemMeta();
         if (meta.getPersistentDataContainer().has(CraftableInvisibleItemFrames.getRegularInvisibleItemFrameTag())) {
-            TextComponent translatedDisplayName = Component.text(ChatColor.translateAlternateColorCodes('&', CraftableInvisibleItemFrames.getLang(locale).invisible_item_frame));
-            if (availableItemTranslations.contains(meta.getDisplayName()) && !Objects.equals(itemStack.displayName(), translatedDisplayName)) {
+            Component translatedDisplayName = Component.text(ChatColor.translateAlternateColorCodes('&', CraftableInvisibleItemFrames.getLang(locale).invisible_item_frame));
+            if (availableItemTranslations.contains(meta.displayName()) && !Objects.equals(meta.displayName(), translatedDisplayName)) {
                 meta.displayName(translatedDisplayName);
                 itemStack.setItemMeta(meta);
             }
-        } else if (itemStack.getItemMeta().getPersistentDataContainer().has(CraftableInvisibleItemFrames.getGlowsquidInvisibleItemFrameTag())) {
-            TextComponent translatedDisplayName = Component.text(ChatColor.translateAlternateColorCodes('&', CraftableInvisibleItemFrames.getLang(locale).glow_invisible_item_frame));
-            if (availableItemTranslations.contains(meta.getDisplayName()) && !Objects.equals(itemStack.displayName(), translatedDisplayName)) {
+        } else if (meta.getPersistentDataContainer().has(CraftableInvisibleItemFrames.getGlowsquidInvisibleItemFrameTag())) {
+            Component translatedDisplayName = Component.text(ChatColor.translateAlternateColorCodes('&', CraftableInvisibleItemFrames.getLang(locale).glow_invisible_item_frame));
+            if (availableItemTranslations.contains(meta.displayName()) && !Objects.equals(meta.displayName(), translatedDisplayName)) {
                 meta.displayName(translatedDisplayName);
                 itemStack.setItemMeta(meta);
             }
