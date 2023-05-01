@@ -3,6 +3,7 @@ package me.xginko.craftableinvisibleitemframes.commands.iframe;
 import me.xginko.craftableinvisibleitemframes.commands.CraftableInvisibleItemFramesCommand;
 import me.xginko.craftableinvisibleitemframes.commands.SubCommand;
 import me.xginko.craftableinvisibleitemframes.commands.iframe.subcommands.*;
+import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -61,16 +62,16 @@ public class IFrameCommand implements CraftableInvisibleItemFramesCommand, TabCo
     }
 
     private void showCommandOverviewTo(CommandSender sender) {
-        sender.sendMessage(ChatColor.GRAY+"-----------------------------------------------------");
-        sender.sendMessage(ChatColor.WHITE+"CraftableInvisibleItemFrames Commands ");
-        sender.sendMessage(ChatColor.GRAY+"-----------------------------------------------------");
+        sender.sendMessage(Component.text(ChatColor.GRAY+"-----------------------------------------------------"));
+        sender.sendMessage(Component.text(ChatColor.WHITE+"CraftableInvisibleItemFrames Commands "));
+        sender.sendMessage(Component.text(ChatColor.GRAY+"-----------------------------------------------------"));
         for (SubCommand subcommand : subcommands) {
-            sender.sendMessage(
+            sender.sendMessage(Component.text(
                     ChatColor.WHITE + subcommand.getSyntax()
                             + ChatColor.DARK_GRAY + " - "
                             + ChatColor.GRAY + subcommand.getDescription()
-            );
+            ));
         }
-        sender.sendMessage(ChatColor.GRAY+"-----------------------------------------------------");
+        sender.sendMessage(Component.text(ChatColor.GRAY+"-----------------------------------------------------"));
     }
 }
