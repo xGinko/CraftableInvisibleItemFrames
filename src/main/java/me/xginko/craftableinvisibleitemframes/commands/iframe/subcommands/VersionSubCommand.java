@@ -31,7 +31,7 @@ public class VersionSubCommand extends SubCommand {
                             ChatColor.WHITE+" by "+ChatColor.AQUA+"xGinko"
             ));
         } else {
-            sender.sendMessage(CraftableInvisibleItemFrames.getLang(sender).noPermission);
+            sender.sendMessage(CraftableInvisibleItemFrames.getLang(sender).no_permission);
         }
     }
 }

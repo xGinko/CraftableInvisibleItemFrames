@@ -2,8 +2,6 @@ package me.xginko.craftableinvisibleitemframes.utils;
 
 import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
 import me.xginko.craftableinvisibleitemframes.config.Config;
-import net.kyori.adventure.text.Component;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -63,7 +61,7 @@ public class ItemUtils {
 
     public static ItemStack getRegularInvisibleItemFrame(int amount, Locale locale) {
         ItemStack localed_invisible_regular_item_frame = getRegularInvisibleItemFrame(amount);
-        localed_invisible_regular_item_frame.editMeta(meta -> meta.displayName(Component.text(ChatColor.translateAlternateColorCodes('&', CraftableInvisibleItemFrames.getLang(locale).invisible_item_frame))));
+        localed_invisible_regular_item_frame.editMeta(meta -> meta.displayName(CraftableInvisibleItemFrames.getLang(locale).invisible_item_frame));
         return localed_invisible_regular_item_frame;
     }
 

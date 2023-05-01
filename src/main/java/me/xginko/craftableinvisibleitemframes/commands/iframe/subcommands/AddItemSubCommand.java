@@ -45,7 +45,7 @@ public class AddItemSubCommand extends SubCommand {
                 sender.sendMessage(Component.text(ChatColor.RED + "Command can't be executed from console."));
             }
         } else {
-            sender.sendMessage(CraftableInvisibleItemFrames.getLang(sender).noPermission);
+            sender.sendMessage(CraftableInvisibleItemFrames.getLang(sender).no_permission);
         }
     }
 }

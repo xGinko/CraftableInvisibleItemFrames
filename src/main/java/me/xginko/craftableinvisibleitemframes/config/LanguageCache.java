@@ -14,7 +14,7 @@ public class LanguageCache {
 
     private final FileConfiguration fileConfiguration;
     boolean addedMissing = false;
-    public Component noPermission, invisible_item_frame, glow_invisible_item_frame;
+    public Component no_permission, invisible_item_frame, glow_invisible_item_frame;
 
     public LanguageCache(String lang) {
         CraftableInvisibleItemFrames plugin = CraftableInvisibleItemFrames.getInstance();
@@ -28,7 +28,7 @@ public class LanguageCache {
         try {
             fileConfiguration.load(langFile);
 
-            this.noPermission = Component.text(ChatColor.translateAlternateColorCodes('&', getStringTranslation("no-permission", "&cYou don't have permission to use this command.")));
+            this.no_permission = Component.text(ChatColor.translateAlternateColorCodes('&', getStringTranslation("no-permission", "&cYou don't have permission to use this command.")));
             this.invisible_item_frame = Component.text(ChatColor.translateAlternateColorCodes('&', getStringTranslation("invisible-itemframe", "&fInvisible Item Frame")));
             this.glow_invisible_item_frame = Component.text(ChatColor.translateAlternateColorCodes('&', getStringTranslation("glow-invisible-itemframe", "&fGlow Invisible Item Frame")));
 
