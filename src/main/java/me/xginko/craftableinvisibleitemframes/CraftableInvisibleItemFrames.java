@@ -237,6 +237,10 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         }
     }
 
+    public static HashMap<String, LanguageCache> getLanguageCacheMap() {
+        return languageCacheMap;
+    }
+
     public static CraftableInvisibleItemFrames getInstance()  {
         return instance;
     }

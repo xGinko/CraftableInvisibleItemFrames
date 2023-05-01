@@ -19,6 +19,7 @@ public interface CraftableInvisibleItemFramesModule {
         HandlerList.unregisterAll(plugin);
 
         modules.add(new TranslateCraftingSuggestion());
+        modules.add(new TranslateItemStacks());
         modules.add(new RegularInvisibleItemFrames());
         if (CraftableInvisibleItemFrames.getConfiguration().glowsquid_invisible_itemframes_are_enabled) {
             modules.add(new GlowsquidInvisibleItemFrames());
