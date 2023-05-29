@@ -25,13 +25,12 @@ public class TranslateCraftingSuggestion implements CraftableInvisibleItemFrames
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     private void onCraft(PrepareItemCraftEvent event) {
-        if (CraftableInvisibleItemFrames.isInvisibleRegularFrameRecipe(event.getRecipe())) {
-            if (
-                    event.getView().getPlayer() instanceof Player player
-                    && player.hasPermission("craftableinvisibleitemframes.craft")
-            ) {
-                event.getInventory().setResult(ItemUtils.getRegularInvisibleItemFrame(8, player.locale()));
-            }
+        if (
+                event.getView().getPlayer() instanceof Player player
+                && player.hasPermission("craftableinvisibleitemframes.craft")
+                && CraftableInvisibleItemFrames.isInvisibleRegularFrameRecipe(event.getRecipe())
+        ) {
+            event.getInventory().setResult(ItemUtils.getRegularInvisibleItemFrame(8, player.locale()));
         }
     }
 }
