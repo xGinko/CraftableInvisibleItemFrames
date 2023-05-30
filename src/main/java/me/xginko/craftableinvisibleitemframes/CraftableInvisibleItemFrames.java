@@ -114,7 +114,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        getServer().removeRecipe(RECIPE_regular_invisible_item_frame);
+        removeRecipeIfPresent(RECIPE_regular_invisible_item_frame);
     }
 
     public void reapplyOutlineSettingsToAllLoadedInvisibleFrames() {
@@ -144,12 +144,25 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
     }
 
     public void reloadRecipe() {
-        getServer().removeRecipe(RECIPE_regular_invisible_item_frame);
+        removeRecipeIfPresent(RECIPE_regular_invisible_item_frame);
         ShapedRecipe invisRecipe = new ShapedRecipe(RECIPE_regular_invisible_item_frame, ItemUtils.getRegularInvisibleItemFrame(8));
         invisRecipe.shape("FFF", "FPF", "FFF");
         invisRecipe.setIngredient('F', Material.ITEM_FRAME);
         invisRecipe.setIngredient('P', new RecipeChoice.ExactChoice(config.recipe_center_items));
         getServer().addRecipe(invisRecipe);
+    }
+
+    public void removeRecipeIfPresent(NamespacedKey recipeKey) {
+        Iterator<Recipe> recipeIterator = getServer().recipeIterator();
+        while (recipeIterator.hasNext()) {
+            Recipe recipe = recipeIterator.next();
+            if (recipe instanceof ShapedRecipe shapedRecipe) {
+                if (shapedRecipe.getKey().equals(recipeKey)) {
+                    recipeIterator.remove();
+                    break;
+                }
+            }
+        }
     }
 
     public void reloadPlugin() {
