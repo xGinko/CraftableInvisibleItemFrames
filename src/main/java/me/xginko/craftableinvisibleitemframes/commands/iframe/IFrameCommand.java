@@ -1,11 +1,11 @@
 package me.xginko.craftableinvisibleitemframes.commands.iframe;
 
-import me.xginko.craftableinvisibleitemframes.commands.CraftableInvisibleItemFramesCommand;
 import me.xginko.craftableinvisibleitemframes.commands.SubCommand;
 import me.xginko.craftableinvisibleitemframes.commands.iframe.subcommands.*;
 import net.kyori.adventure.text.Component;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
@@ -13,10 +13,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IFrameCommand implements CraftableInvisibleItemFramesCommand, TabCompleter {
+public class IFrameCommand implements CommandExecutor, TabCompleter {
 
-    private final ArrayList<SubCommand> subcommands = new ArrayList<>();
-    private final List<String> tabcompleters = new ArrayList<>();
+    private final List<SubCommand> subcommands = new ArrayList<>();
+    private final List<String> tabCompleter = new ArrayList<>();
 
     public IFrameCommand() {
         subcommands.add(new ReloadSubCommand());
@@ -25,27 +25,17 @@ public class IFrameCommand implements CraftableInvisibleItemFramesCommand, TabCo
         subcommands.add(new GetSubCommand());
         subcommands.add(new VersionSubCommand());
         for (SubCommand subcommand : subcommands) {
-            tabcompleters.add(subcommand.getName());
+            tabCompleter.add(subcommand.getName());
         }
-    }
-
-    @Override
-    public String label() {
-        return "iframe";
     }
 
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
-        if (command.getName().equalsIgnoreCase(label()) && args.length >= 1 && args.length <=2) {
-            if (args.length == 1) {
-                return tabcompleters;
-            }
-        }
-        return null;
+        return args.length == 1 ? tabCompleter : null;
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (args.length > 0) {
             boolean cmdExists = false;
             for (SubCommand subcommand : subcommands) {
@@ -62,16 +52,15 @@ public class IFrameCommand implements CraftableInvisibleItemFramesCommand, TabCo
     }
 
     private void showCommandOverviewTo(CommandSender sender) {
-        sender.sendMessage(Component.text(ChatColor.GRAY+"-----------------------------------------------------"));
-        sender.sendMessage(Component.text(ChatColor.WHITE+"CraftableInvisibleItemFrames Commands "));
-        sender.sendMessage(Component.text(ChatColor.GRAY+"-----------------------------------------------------"));
+        sender.sendMessage(Component.text("-----------------------------------------------------").color(NamedTextColor.GRAY));
+        sender.sendMessage(Component.text("CraftableInvisibleItemFrames Commands ").color(NamedTextColor.YELLOW));
+        sender.sendMessage(Component.text("-----------------------------------------------------").color(NamedTextColor.GRAY));
         for (SubCommand subcommand : subcommands) {
-            sender.sendMessage(Component.text(
-                    ChatColor.WHITE + subcommand.getSyntax()
-                            + ChatColor.DARK_GRAY + " - "
-                            + ChatColor.GRAY + subcommand.getDescription()
-            ));
+            sender.sendMessage(Component.text(subcommand.getSyntax()).color(NamedTextColor.WHITE)
+                    .append(Component.text(" - ").color(NamedTextColor.DARK_GRAY))
+                    .append(Component.text(subcommand.getDescription())).color(NamedTextColor.GRAY)
+            );
         }
-        sender.sendMessage(Component.text(ChatColor.GRAY+"-----------------------------------------------------"));
+        sender.sendMessage(Component.text("-----------------------------------------------------").color(NamedTextColor.GRAY));
     }
 }

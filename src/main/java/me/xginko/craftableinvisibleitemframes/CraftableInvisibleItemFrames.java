@@ -1,6 +1,6 @@
 package me.xginko.craftableinvisibleitemframes;
 
-import me.xginko.craftableinvisibleitemframes.commands.CraftableInvisibleItemFramesCommand;
+import me.xginko.craftableinvisibleitemframes.commands.iframe.IFrameCommand;
 import me.xginko.craftableinvisibleitemframes.config.Config;
 import me.xginko.craftableinvisibleitemframes.config.LanguageCache;
 import me.xginko.craftableinvisibleitemframes.modules.CraftableInvisibleItemFramesModule;
@@ -106,7 +106,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         reloadRecipe();
 
         logger.info("Registering Commands");
-        CraftableInvisibleItemFramesCommand.reloadCommands();
+        getCommand("iframe").setExecutor(new IFrameCommand());
 
         logger.info("Loading Metrics");
         new Metrics(this, 17841);
@@ -155,11 +155,10 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
     public void removeRecipeIfPresent(NamespacedKey recipeKey) {
         Iterator<Recipe> recipeIterator = getServer().recipeIterator();
         while (recipeIterator.hasNext()) {
-            Recipe recipe = recipeIterator.next();
-            if (recipe instanceof ShapedRecipe shapedRecipe) {
+            if (recipeIterator.next() instanceof ShapedRecipe shapedRecipe) {
                 if (shapedRecipe.getKey().equals(recipeKey)) {
                     recipeIterator.remove();
-                    break;
+                    return;
                 }
             }
         }
@@ -169,7 +168,6 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         reloadLang();
         reloadConfiguration();
         reloadRecipe();
-        CraftableInvisibleItemFramesCommand.reloadCommands();
         reapplyOutlineSettingsToAllLoadedInvisibleFrames();
     }
 

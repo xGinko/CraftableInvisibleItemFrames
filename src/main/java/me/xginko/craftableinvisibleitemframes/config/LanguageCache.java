@@ -2,7 +2,7 @@ package me.xginko.craftableinvisibleitemframes.config;
 
 import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
 import net.kyori.adventure.text.Component;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -28,9 +28,9 @@ public class LanguageCache {
         try {
             fileConfiguration.load(langFile);
 
-            this.no_permission = Component.text(ChatColor.translateAlternateColorCodes('&', getStringTranslation("no-permission", "&cYou don't have permission to use this command.")));
-            this.invisible_item_frame = Component.text(ChatColor.translateAlternateColorCodes('&', getStringTranslation("invisible-itemframe", "&fInvisible Item Frame")));
-            this.glow_invisible_item_frame = Component.text(ChatColor.translateAlternateColorCodes('&', getStringTranslation("glow-invisible-itemframe", "&fGlow Invisible Item Frame")));
+            this.no_permission = getTranslation("no-permission", "<red>You don't have permission to use this command.");
+            this.invisible_item_frame = getTranslation("invisible-itemframe", "<white>Invisible Item Frame");
+            this.glow_invisible_item_frame = getTranslation("glow-invisible-itemframe", "<white>Glow Invisible Item Frame");
 
             if (addedMissing) fileConfiguration.save(langFile);
         } catch (IOException e) {
@@ -40,14 +40,13 @@ public class LanguageCache {
         }
     }
 
-    public String getStringTranslation(String path, String defaultTranslation) {
+    public Component getTranslation(String path, String defaultTranslation) {
         String translation = fileConfiguration.getString(path);
         if (translation == null) {
             fileConfiguration.set(path, defaultTranslation);
             addedMissing = true;
-            return defaultTranslation;
+            return MiniMessage.miniMessage().deserialize(defaultTranslation);
         }
-        return translation;
+        return MiniMessage.miniMessage().deserialize(translation);
     }
-
 }

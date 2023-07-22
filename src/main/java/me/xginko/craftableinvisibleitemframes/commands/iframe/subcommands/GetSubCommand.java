@@ -4,7 +4,7 @@ import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
 import me.xginko.craftableinvisibleitemframes.commands.SubCommand;
 import me.xginko.craftableinvisibleitemframes.utils.ItemUtils;
 import net.kyori.adventure.text.Component;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -26,15 +26,16 @@ public class GetSubCommand extends SubCommand {
 
     @Override
     public void perform(CommandSender sender, String[] args) {
-        if (sender.hasPermission("craftableinvisibleitemframes.cmd.get")) {
-            if (sender instanceof Player player) {
-                ItemUtils.addToInventoryOrDrop(player, ItemUtils.getRegularInvisibleItemFrame(8, player.locale()));
-                player.sendMessage(Component.text(ChatColor.GREEN + "You received 8 invisible itemframes."));
-            } else {
-                sender.sendMessage(Component.text(ChatColor.RED + "Command can't be executed from console."));
-            }
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(Component.text("Command can't be executed from console.").color(NamedTextColor.RED));
+            return;
+        }
+
+        if (player.hasPermission("craftableinvisibleitemframes.cmd.get")) {
+            ItemUtils.addToInventoryOrDrop(player, ItemUtils.getRegularInvisibleItemFrame(64, player.locale()));
+            player.sendMessage(Component.text("You received 8 invisible itemframes.").color(NamedTextColor.GREEN));
         } else {
-            sender.sendMessage(CraftableInvisibleItemFrames.getLang(sender).no_permission);
+            player.sendMessage(CraftableInvisibleItemFrames.getLang(player.locale()).no_permission);
         }
     }
 }

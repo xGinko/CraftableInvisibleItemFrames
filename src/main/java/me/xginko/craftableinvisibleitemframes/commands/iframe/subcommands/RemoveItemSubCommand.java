@@ -4,7 +4,7 @@ import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
 import me.xginko.craftableinvisibleitemframes.commands.SubCommand;
 import me.xginko.craftableinvisibleitemframes.config.Config;
 import net.kyori.adventure.text.Component;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -29,25 +29,26 @@ public class RemoveItemSubCommand extends SubCommand {
 
     @Override
     public void perform(CommandSender sender, String[] args) {
-        if (sender.hasPermission("craftableinvisibleitemframes.cmd.removeitem")) {
-            if (sender instanceof Player player) {
-                ItemStack itemPlayerIsHolding = player.getInventory().getItemInMainHand();
-                if (!itemPlayerIsHolding.getType().equals(Material.AIR)) {
-                    Config config = CraftableInvisibleItemFrames.getConfiguration();
-                    if (config.recipe_center_items.contains(itemPlayerIsHolding)) {
-                        config.removeFromRecipeCenterItems(itemPlayerIsHolding);
-                        player.sendMessage(Component.text(ChatColor.GREEN + "Removed "+itemPlayerIsHolding.getAmount()+"x "+itemPlayerIsHolding.getType().name()+" from the possible recipe center items."));
-                    } else {
-                        player.sendMessage(Component.text(ChatColor.RED + "Item has not been added to the center recipes yet!"));
-                    }
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(Component.text("Command can't be executed from console.").color(NamedTextColor.RED));
+            return;
+        }
+
+        if (player.hasPermission("craftableinvisibleitemframes.cmd.removeitem")) {
+            ItemStack itemPlayerIsHolding = player.getInventory().getItemInMainHand();
+            if (!itemPlayerIsHolding.getType().equals(Material.AIR)) {
+                Config config = CraftableInvisibleItemFrames.getConfiguration();
+                if (config.recipe_center_items.contains(itemPlayerIsHolding)) {
+                    config.removeFromRecipeCenterItems(itemPlayerIsHolding);
+                    player.sendMessage(Component.text("Removed "+itemPlayerIsHolding.getAmount()+"x "+itemPlayerIsHolding.getType().name()+" from the possible recipe center items.").color(NamedTextColor.GREEN));
                 } else {
-                    player.sendMessage(Component.text(ChatColor.RED + "You have to hold an item in your hand."));
+                    player.sendMessage(Component.text("Item has not been added to the center recipes yet!").color(NamedTextColor.RED));
                 }
             } else {
-                sender.sendMessage(Component.text(ChatColor.RED + "Command can't be executed from console."));
+                player.sendMessage(Component.text("You have to hold an item in your hand.").color(NamedTextColor.RED));
             }
         } else {
-            sender.sendMessage(CraftableInvisibleItemFrames.getLang(sender).no_permission);
+            player.sendMessage(CraftableInvisibleItemFrames.getLang(player.locale()).no_permission);
         }
     }
 }

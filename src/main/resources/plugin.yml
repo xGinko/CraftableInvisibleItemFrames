@@ -4,8 +4,8 @@ main: me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames
 api-version: 1.19
 prefix: CraftInvisIFrames
 authors: [ xGinko ]
-description: Let players craft invisible itemframes by using invisibility potions and itemframes
-website: github.com/xGinko
+description: ${project.description}
+website: ${project.url}
 commands:
   iframe:
     permission: craftableinvisibleitemframes.cmd

@@ -13,28 +13,26 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class Config {
 
-    private CraftableInvisibleItemFrames plugin;
+    private final CraftableInvisibleItemFrames plugin;
     private FileConfiguration config;
     private final File configPath;
-    private final Logger logger;
 
     public final Locale default_lang;
-    public final boolean auto_lang, regular_invisible_itemframes_are_enabled, regular_placed_item_frames_have_glowing_outlines, regular_item_frames_should_be_enchanted,
-                glowsquid_invisible_itemframes_are_enabled, glowsquid_placed_item_frames_have_glowing_outlines, glowsquid_item_frames_should_be_enchanted;
+    public final boolean auto_lang, regular_invisible_itemframes_are_enabled, regular_placed_item_frames_have_glowing_outlines,
+            regular_item_frames_should_be_enchanted, glowsquid_invisible_itemframes_are_enabled,
+            glowsquid_placed_item_frames_have_glowing_outlines, glowsquid_item_frames_should_be_enchanted;
     public final double config_version;
-    public final List<ItemStack> recipe_center_items = new ArrayList<>();
+    public final List<ItemStack> recipe_center_items;
 
     public Config() {
         this.plugin = CraftableInvisibleItemFrames.getInstance();
         plugin.reloadConfig();
         config = plugin.getConfig();
         configPath = new File(plugin.getDataFolder(), "config.yml");
-        logger = CraftableInvisibleItemFrames.getLog();
 
         // Config Version - This has no function yet but can be used to parse older configs to new versions in the future.
         this.config_version = getDouble("config-version", 1.0);
@@ -71,9 +69,7 @@ public class Config {
         defaults.add(long_lingering_invisibility);
         // config.set("recipe-center-items", defaults.stream().distinct().collect(Collectors.toList()));
 
-        this.recipe_center_items.addAll(
-                getItemStackList("recipe-center-items", defaults)
-        );
+        this.recipe_center_items = getItemStackList("recipe-center-items", defaults);
     }
 
     public void saveConfig() {
@@ -81,7 +77,7 @@ public class Config {
             config.save(configPath);
             config = CraftableInvisibleItemFrames.getInstance().getConfig();
         } catch (IOException e) {
-            logger.severe("Failed to save configuration file! - " + e.getLocalizedMessage());
+            CraftableInvisibleItemFrames.getLog().severe("Failed to save configuration file! - " + e.getLocalizedMessage());
         }
     }
 

@@ -1,3 +1,3 @@
-no-permission: "&cDu har ikke tilladelse til at bruge denne kommando."
-invisible-itemframe: "&fUsyndelig Genstandsramme"
-glow-invisible-itemframe: "&fGlødende Usyndelig Genstandsramme"
+no-permission: "<red>Du har ikke tilladelse til at bruge denne kommando."
+invisible-itemframe: "<white>Usyndelig Genstandsramme"
+glow-invisible-itemframe: "<white>Glødende Usyndelig Genstandsramme"
