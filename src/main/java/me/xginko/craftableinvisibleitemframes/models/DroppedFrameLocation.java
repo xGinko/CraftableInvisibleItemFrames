@@ -17,12 +17,12 @@ public class DroppedFrameLocation {
     public boolean isFrame(Item item) {
         return box.contains(item.getBoundingBox());
     }
-    public WrappedTask getRemoval()
-    {
+
+    public WrappedTask getRemoval() {
         return removal;
     }
+
     public void setRemoval(WrappedTask removal) {
         this.removal = removal;
     }
-
 }
