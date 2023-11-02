@@ -44,6 +44,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         instance = this;
         logger = getLogger();
         compatibleScheduler = new FoliaLib(this).getImpl();
+        new Metrics(this, 17841);
 
         logger.info("                        /*\\                       ");
         logger.info("              ┏╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍┓              ");
@@ -72,9 +73,6 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
 
         logger.info("Registering Commands");
         getCommand("iframe").setExecutor(new IFrameCommand());
-
-        logger.info("Loading Metrics");
-        new Metrics(this, 17841);
     }
 
     public static CraftableInvisibleItemFrames getInstance()  {
@@ -105,6 +103,18 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         return isGlowVariantCompatible;
     }
 
+    public void reloadPlugin() {
+        reloadLang();
+        reloadConfiguration();
+        reapplyOutlineSettingsToAllLoadedInvisibleFrames();
+    }
+
+    public void reloadConfiguration() {
+        config = new Config();
+        PluginModule.reloadModules();
+        config.saveConfig();
+    }
+
     public void reapplyOutlineSettingsToAllLoadedInvisibleFrames() {
         for (World world : getServer().getWorlds()) {
             for (Entity entity : world.getEntities()) {
@@ -129,18 +139,6 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
                 }
             }
         }
-    }
-
-    public void reloadPlugin() {
-        reloadLang();
-        reloadConfiguration();
-        reapplyOutlineSettingsToAllLoadedInvisibleFrames();
-    }
-
-    public void reloadConfiguration() {
-        config = new Config();
-        PluginModule.reloadModules();
-        config.saveConfig();
     }
 
     public void reloadLang() {
