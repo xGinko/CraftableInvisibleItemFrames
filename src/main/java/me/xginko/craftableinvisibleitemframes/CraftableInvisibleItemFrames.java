@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 public final class CraftableInvisibleItemFrames extends JavaPlugin {
 
     private static CraftableInvisibleItemFrames instance;
+    private ServerImplementation scheduler;
     private static HashMap<String, LanguageCache> languageCacheMap;
     private static Config config;
     private static Logger logger;
@@ -43,6 +44,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         instance = this;
         logger = getLogger();
         new Metrics(this, 17841);
+        scheduler = new FoliaLib(this).getImpl();
 
         logger.info("                         ");
         logger.info("           /*\\           ");
@@ -81,7 +83,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         return new NamespacedKey(instance, key);
     }
     public ServerImplementation getCompatibleScheduler() {
-        return new FoliaLib(this).getImpl();
+        return scheduler;
     }
     public static Logger getLog() {
         return logger;
@@ -114,7 +116,8 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
     public void reapplyOutlineSettingsToAllLoadedInvisibleFrames() {
         for (World world : getServer().getWorlds()) {
             for (Entity entity : world.getEntities()) {
-                if (entity instanceof ItemFrame itemFrame) {
+                if (!(entity instanceof ItemFrame itemFrame)) continue;
+                scheduler.runAtEntity(itemFrame, applyOutlineSettings -> {
                     if (itemFrame.getPersistentDataContainer().has(Keys.INVISIBLE_GLOW_ITEM_FRAME.key(), PersistentDataType.BYTE)) {
                         if (itemFrame.getItem().getType().equals(Material.AIR) && config.glowsquid_placed_item_frames_have_glowing_outlines) {
                             itemFrame.setGlowing(true);
@@ -132,7 +135,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
                             itemFrame.setVisible(false);
                         }
                     }
-                }
+                });
             }
         }
     }
