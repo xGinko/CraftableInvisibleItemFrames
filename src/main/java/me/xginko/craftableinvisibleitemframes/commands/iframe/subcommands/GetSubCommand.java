@@ -3,7 +3,6 @@ package me.xginko.craftableinvisibleitemframes.commands.iframe.subcommands;
 import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
 import me.xginko.craftableinvisibleitemframes.commands.SubCommand;
 import me.xginko.craftableinvisibleitemframes.models.InvisibleItemFrame;
-import me.xginko.craftableinvisibleitemframes.utils.CommonUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
@@ -33,7 +32,9 @@ public class GetSubCommand extends SubCommand {
         }
 
         if (player.hasPermission("craftableinvisibleitemframes.cmd.get")) {
-            CommonUtil.addToInventoryOrDrop(player, new InvisibleItemFrame(64, player.locale()));
+            player.getInventory().addItem(new InvisibleItemFrame(64, player.locale())).forEach((index, itemsThatDidNotFit) -> {
+                player.getWorld().dropItemNaturally(player.getLocation(), itemsThatDidNotFit).setPickupDelay(1);
+            });
             player.sendMessage(Component.text("Received 64 invisible item frames.").color(NamedTextColor.GREEN));
         } else {
             player.sendMessage(CraftableInvisibleItemFrames.getLang(player.locale()).no_permission);

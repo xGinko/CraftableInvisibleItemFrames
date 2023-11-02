@@ -87,6 +87,7 @@ public class GlowsquidInvisibleItemFrames implements PluginModule, Listener {
                 foundInvisIframe = true;
                 continue;
             }
+
             return;
         }
 
