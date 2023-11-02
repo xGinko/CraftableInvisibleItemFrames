@@ -2,7 +2,8 @@ package me.xginko.craftableinvisibleitemframes.commands.iframe.subcommands;
 
 import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
 import me.xginko.craftableinvisibleitemframes.commands.SubCommand;
-import me.xginko.craftableinvisibleitemframes.utils.ItemUtils;
+import me.xginko.craftableinvisibleitemframes.models.InvisibleItemFrame;
+import me.xginko.craftableinvisibleitemframes.utils.CommonUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
@@ -16,7 +17,7 @@ public class GetSubCommand extends SubCommand {
 
     @Override
     public String getDescription() {
-        return "Give yourself an invisible itemframe";
+        return "Give yourself invisible item frames";
     }
 
     @Override
@@ -32,8 +33,8 @@ public class GetSubCommand extends SubCommand {
         }
 
         if (player.hasPermission("craftableinvisibleitemframes.cmd.get")) {
-            ItemUtils.addToInventoryOrDrop(player, ItemUtils.getRegularInvisibleItemFrame(64, player.locale()));
-            player.sendMessage(Component.text("You received 8 invisible itemframes.").color(NamedTextColor.GREEN));
+            CommonUtil.addToInventoryOrDrop(player, new InvisibleItemFrame(64, player.locale()));
+            player.sendMessage(Component.text("Received 64 invisible item frames.").color(NamedTextColor.GREEN));
         } else {
             player.sendMessage(CraftableInvisibleItemFrames.getLang(player.locale()).no_permission);
         }

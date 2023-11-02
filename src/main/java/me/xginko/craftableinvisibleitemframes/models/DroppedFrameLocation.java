@@ -1,29 +1,27 @@
-package me.xginko.craftableinvisibleitemframes.utils;
+package me.xginko.craftableinvisibleitemframes.models;
 
+import com.tcoded.folialib.wrapper.task.WrappedTask;
 import org.bukkit.Location;
 import org.bukkit.entity.Item;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.BoundingBox;
 
 public class DroppedFrameLocation {
 
     private final BoundingBox box;
-    private BukkitTask removal;
+    private WrappedTask removal;
     
-    public DroppedFrameLocation(Location location)
-    {
+    public DroppedFrameLocation(Location location) {
         this.box = BoundingBox.of(location, 1.0, 1.0, 1.0);
     }
-    public boolean isFrame(Item item)
-    {
+
+    public boolean isFrame(Item item) {
         return box.contains(item.getBoundingBox());
     }
-    public BukkitTask getRemoval()
+    public WrappedTask getRemoval()
     {
         return removal;
     }
-    public void setRemoval(BukkitTask removal)
-    {
+    public void setRemoval(WrappedTask removal) {
         this.removal = removal;
     }
 

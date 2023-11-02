@@ -1,14 +1,18 @@
 package me.xginko.craftableinvisibleitemframes.modules;
 
 import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
-import me.xginko.craftableinvisibleitemframes.utils.ItemUtils;
+import me.xginko.craftableinvisibleitemframes.enums.Keys;
+import me.xginko.craftableinvisibleitemframes.models.InvisibleItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ShapedRecipe;
 
-public class TranslateCraftingSuggestion implements CraftableInvisibleItemFramesModule, Listener {
+public class TranslateCraftingSuggestion implements PluginModule, Listener {
 
     protected TranslateCraftingSuggestion() {}
 
@@ -23,14 +27,21 @@ public class TranslateCraftingSuggestion implements CraftableInvisibleItemFrames
         return CraftableInvisibleItemFrames.getConfiguration().auto_lang;
     }
 
+    @Override
+    public void disable() {
+        HandlerList.unregisterAll(this);
+    }
+
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     private void onCraft(PrepareItemCraftEvent event) {
         if (
                 event.getView().getPlayer() instanceof Player player
                 && player.hasPermission("craftableinvisibleitemframes.craft")
-                && CraftableInvisibleItemFrames.isInvisibleRegularFrameRecipe(event.getRecipe())
+                && event.getRecipe() instanceof ShapedRecipe shapedRecipe
+                && shapedRecipe.getKey().equals(Keys.INVISIBLE_ITEM_FRAME_RECIPE.key())
         ) {
-            event.getInventory().setResult(ItemUtils.getRegularInvisibleItemFrame(8, player.locale()));
+            final ItemStack resultItem = event.getInventory().getResult();
+            event.getInventory().setResult(new InvisibleItemFrame(resultItem == null ? 8 : resultItem.getAmount(), player.locale()));
         }
     }
 }
