@@ -66,14 +66,13 @@ public class RegularInvisibleItemFrames implements PluginModule, Listener {
                 return;
             }
 
-            ItemFrame itemFrame = (ItemFrame) hanging;
-
-            scheduler.runAtEntity(itemFrame, manage -> {
-                if (placed_item_frames_have_glowing_outlines) {
+            scheduler.runAtEntity(hanging, manage -> {
+                ItemFrame itemFrame = (ItemFrame) hanging;
+                if (!placed_item_frames_have_glowing_outlines) {
+                    itemFrame.setVisible(false);
+                } else {
                     itemFrame.setVisible(true);
                     itemFrame.setGlowing(true);
-                } else {
-                    itemFrame.setVisible(false);
                 }
                 itemFrame.getPersistentDataContainer().set(Keys.INVISIBLE_ITEM_FRAME.key(), PersistentDataType.BYTE, (byte) 1);
             });

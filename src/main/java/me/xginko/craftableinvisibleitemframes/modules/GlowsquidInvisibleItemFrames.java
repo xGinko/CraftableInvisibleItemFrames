@@ -115,14 +115,13 @@ public class GlowsquidInvisibleItemFrames implements PluginModule, Listener {
                 return;
             }
 
-            GlowItemFrame glowItemFrame = (GlowItemFrame) hanging;
-
-            scheduler.runAtEntity(glowItemFrame, manage -> {
-                if (placed_item_frames_have_glowing_outlines) {
+            scheduler.runAtEntity(hanging, manage -> {
+                GlowItemFrame glowItemFrame = (GlowItemFrame) hanging;
+                if (!placed_item_frames_have_glowing_outlines) {
+                    glowItemFrame.setVisible(false);
+                } else {
                     glowItemFrame.setVisible(true);
                     glowItemFrame.setGlowing(true);
-                } else {
-                    glowItemFrame.setVisible(false);
                 }
                 glowItemFrame.getPersistentDataContainer().set(Keys.INVISIBLE_GLOW_ITEM_FRAME.key(), PersistentDataType.BYTE, (byte) 1);
             });
