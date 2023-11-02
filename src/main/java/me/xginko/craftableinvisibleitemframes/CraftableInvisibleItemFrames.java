@@ -64,12 +64,11 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
 
         logger.info("Loading Language");
         reloadLang();
-
         logger.info("Loading Config");
         reloadConfiguration();
-
         logger.info("Registering Commands");
         getCommand("iframe").setExecutor(new IFrameCommand());
+        logger.info("Done.");
     }
 
     public static CraftableInvisibleItemFrames getInstance()  {
