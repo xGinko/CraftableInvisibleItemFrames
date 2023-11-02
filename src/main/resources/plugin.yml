@@ -2,6 +2,7 @@ name: CraftableInvisibleItemFrames
 version: '${project.version}'
 main: me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames
 api-version: 1.16
+folia-supported: true
 prefix: InvisibleItemFrames
 authors: [ xGinko ]
 description: ${project.description}

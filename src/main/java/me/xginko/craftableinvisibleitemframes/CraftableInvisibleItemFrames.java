@@ -44,17 +44,16 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         logger = getLogger();
         new Metrics(this, 17841);
 
-        logger.info("                                                  ");
-        logger.info("                        /*\\                       ");
-        logger.info("              ┏╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍┓              ");
-        logger.info("              ┋                    ┋              ");
-        logger.info("              ┋                    ┋              ");
-        logger.info("              ┋                    ┋              ");
-        logger.info("              ┋                    ┋              ");
-        logger.info("              ┗╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍┛              ");
-        logger.info("                                                  ");
-        logger.info("          Craftable Invisible Item Frames         ");
-        logger.info("                                                  ");
+        logger.info("                         ");
+        logger.info("           /*\\           ");
+        logger.info("      ┏╍╍╍╍╍╍╍╍╍╍╍┓      ");
+        logger.info("      ┋           ┋      ");
+        logger.info("      ┋           ┋      ");
+        logger.info("      ┋           ┋      ");
+        logger.info("      ┗╍╍╍╍╍╍╍╍╍╍╍┛      ");
+        logger.info("        Craftable        ");
+        logger.info("  Invisible Item Frames  ");
+        logger.info("                         ");
 
         try {
             Class.forName("org.bukkit.entity.GlowItemFrame");
