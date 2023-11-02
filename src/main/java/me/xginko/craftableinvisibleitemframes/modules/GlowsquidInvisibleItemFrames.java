@@ -117,14 +117,15 @@ public class GlowsquidInvisibleItemFrames implements PluginModule, Listener {
 
             GlowItemFrame glowItemFrame = (GlowItemFrame) hanging;
 
-            if (placed_item_frames_have_glowing_outlines) {
-                glowItemFrame.setVisible(true);
-                glowItemFrame.setGlowing(true);
-            } else {
-                glowItemFrame.setVisible(false);
-            }
-
-            glowItemFrame.getPersistentDataContainer().set(Keys.INVISIBLE_GLOW_ITEM_FRAME.key(), PersistentDataType.BYTE, (byte) 1);
+            scheduler.runAtEntity(glowItemFrame, manage -> {
+                if (placed_item_frames_have_glowing_outlines) {
+                    glowItemFrame.setVisible(true);
+                    glowItemFrame.setGlowing(true);
+                } else {
+                    glowItemFrame.setVisible(false);
+                }
+                glowItemFrame.getPersistentDataContainer().set(Keys.INVISIBLE_GLOW_ITEM_FRAME.key(), PersistentDataType.BYTE, (byte) 1);
+            });
         }
     }
 
@@ -137,9 +138,7 @@ public class GlowsquidInvisibleItemFrames implements PluginModule, Listener {
         // Sets up a bounding box that checks for items near the frame to convert them
         DroppedFrameLocation droppedFrameLocation = new DroppedFrameLocation(hanging.getLocation());
         droppedGlowsquidFrames.add(droppedFrameLocation);
-        droppedFrameLocation.setRemoval(scheduler.runLater(() -> {
-            droppedGlowsquidFrames.remove(droppedFrameLocation);
-        }, 1, TimeUnit.SECONDS));
+        droppedFrameLocation.setRemoval(scheduler.runLater(() -> droppedGlowsquidFrames.remove(droppedFrameLocation), 1, TimeUnit.SECONDS));
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)

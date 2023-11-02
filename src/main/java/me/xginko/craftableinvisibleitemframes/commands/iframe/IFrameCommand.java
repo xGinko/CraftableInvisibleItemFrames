@@ -15,8 +15,8 @@ import java.util.List;
 
 public class IFrameCommand implements CommandExecutor, TabCompleter {
 
-    private final List<SubCommand> subcommands = new ArrayList<>();
-    private final List<String> tabCompleter = new ArrayList<>();
+    private final List<SubCommand> subcommands = new ArrayList<>(5);
+    private final List<String> tabCompleter = new ArrayList<>(5);
 
     public IFrameCommand() {
         subcommands.add(new ReloadSubCommand());

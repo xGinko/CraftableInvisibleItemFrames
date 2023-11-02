@@ -33,7 +33,6 @@ import java.util.regex.Pattern;
 public final class CraftableInvisibleItemFrames extends JavaPlugin {
 
     private static CraftableInvisibleItemFrames instance;
-    private ServerImplementation compatibleScheduler;
     private static HashMap<String, LanguageCache> languageCacheMap;
     private static Config config;
     private static Logger logger;
@@ -43,9 +42,9 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
     public void onEnable() {
         instance = this;
         logger = getLogger();
-        compatibleScheduler = new FoliaLib(this).getImpl();
         new Metrics(this, 17841);
 
+        logger.info("                                                  ");
         logger.info("                        /*\\                       ");
         logger.info("              ┏╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍┓              ");
         logger.info("              ┋                    ┋              ");
@@ -55,7 +54,6 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         logger.info("              ┗╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍┛              ");
         logger.info("                                                  ");
         logger.info("          Craftable Invisible Item Frames         ");
-        logger.info("                                                  ");
         logger.info("                                                  ");
 
         try {
@@ -85,7 +83,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         return new NamespacedKey(instance, key);
     }
     public ServerImplementation getCompatibleScheduler() {
-        return compatibleScheduler;
+        return new FoliaLib(this).getImpl();
     }
     public static Logger getLog() {
         return logger;
