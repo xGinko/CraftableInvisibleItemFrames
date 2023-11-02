@@ -1,8 +1,8 @@
 name: CraftableInvisibleItemFrames
 version: '${project.version}'
 main: me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames
-api-version: 1.19
-prefix: CraftInvisIFrames
+api-version: 1.16
+prefix: InvisibleItemFrames
 authors: [ xGinko ]
 description: ${project.description}
 website: ${project.url}

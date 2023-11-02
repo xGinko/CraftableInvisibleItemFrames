@@ -10,14 +10,13 @@
     <packaging>jar</packaging>
 
     <name>CraftableInvisibleItemFrames</name>
-    <description>Let players craft invisible itemframes using lingering invisibility potions and itemframes</description>
+    <description>Let players craft invisible item frames that disappear when an item is placed inside</description>
     <url>https://github.com/xGinko/CraftableInvisibleItemFrames</url>
 
     <properties>
         <java.version>16</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
 
     <build>
         <plugins>
