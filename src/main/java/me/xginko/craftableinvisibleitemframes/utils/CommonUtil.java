@@ -15,9 +15,15 @@ import java.util.Random;
 public class CommonUtil {
 
     public static boolean isInvisibleItemFrame(ItemStack itemStack) {
-        return itemStack != null
-        && itemStack.getType().equals(Material.ITEM_FRAME)
-        && itemStack.getItemMeta().getPersistentDataContainer().has(Keys.INVISIBLE_ITEM_FRAME.key(), PersistentDataType.BYTE);
+        return  itemStack != null
+                && itemStack.getType() == Material.ITEM_FRAME
+                && itemStack.getItemMeta().getPersistentDataContainer().has(Keys.INVISIBLE_ITEM_FRAME.key(), PersistentDataType.BYTE);
+    }
+
+    public static boolean isInvisibleGlowItemFrame(ItemStack itemStack) {
+        return  itemStack != null
+                && itemStack.getType() == Material.GLOW_ITEM_FRAME
+                && itemStack.getItemMeta().getPersistentDataContainer().has(Keys.INVISIBLE_GLOW_ITEM_FRAME.key(), PersistentDataType.BYTE);
     }
 
     public static Locale getRandomNearbyPlayerLang(Location location) {
@@ -25,6 +31,4 @@ public class CommonUtil {
         if (nearbyPlayers.isEmpty()) return CraftableInvisibleItemFrames.getConfiguration().default_lang;
         return nearbyPlayers.stream().toList().get(new Random().nextInt(nearbyPlayers.size())).locale();
     }
-
-
 }

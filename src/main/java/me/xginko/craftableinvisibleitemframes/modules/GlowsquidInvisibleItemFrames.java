@@ -54,12 +54,6 @@ public class GlowsquidInvisibleItemFrames implements PluginModule, Listener {
         HandlerList.unregisterAll(this);
     }
 
-    private static boolean isInvisibleGlowItemFrame(ItemStack itemStack) {
-        return itemStack != null
-        && itemStack.getType().equals(Material.GLOW_ITEM_FRAME)
-        && itemStack.getItemMeta().getPersistentDataContainer().has(Keys.INVISIBLE_GLOW_ITEM_FRAME.key(), PersistentDataType.BYTE);
-    }
-
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onCraft(PrepareItemCraftEvent event) {
         if (
@@ -104,7 +98,7 @@ public class GlowsquidInvisibleItemFrames implements PluginModule, Listener {
     private void onHangingPlace(HangingPlaceEvent event) {
         Hanging hanging = event.getEntity();
         if (!hanging.getType().equals(EntityType.GLOW_ITEM_FRAME)) return;
-        if (!isInvisibleGlowItemFrame(event.getItemStack())) return;
+        if (!CommonUtil.isInvisibleGlowItemFrame(event.getItemStack())) return;
         final Player player = event.getPlayer();
         if (player == null) return;
 
