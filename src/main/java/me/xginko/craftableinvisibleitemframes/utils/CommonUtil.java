@@ -25,4 +25,6 @@ public class CommonUtil {
         if (nearbyPlayers.isEmpty()) return CraftableInvisibleItemFrames.getConfiguration().default_lang;
         return nearbyPlayers.stream().toList().get(new Random().nextInt(nearbyPlayers.size())).locale();
     }
+
+
 }

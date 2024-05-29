@@ -54,29 +54,25 @@ public class RegularInvisibleItemFrames implements PluginModule, Listener {
     private void onHangingPlace(HangingPlaceEvent event) {
         Hanging hanging = event.getEntity();
         if (!hanging.getType().equals(EntityType.ITEM_FRAME)) return;
+        if (!CommonUtil.isInvisibleItemFrame(event.getItemStack())) return;
         Player player = event.getPlayer();
         if (player == null) return;
 
-        if (
-                CommonUtil.isInvisibleItemFrame(player.getInventory().getItemInMainHand())
-                || CommonUtil.isInvisibleItemFrame(player.getInventory().getItemInOffHand())
-        ) {
-            if (!player.hasPermission("craftableinvisibleitemframes.place")) {
-                event.setCancelled(true);
-                return;
-            }
-
-            scheduler.runAtEntity(hanging, manage -> {
-                ItemFrame itemFrame = (ItemFrame) hanging;
-                if (!placed_item_frames_have_glowing_outlines) {
-                    itemFrame.setVisible(false);
-                } else {
-                    itemFrame.setVisible(true);
-                    itemFrame.setGlowing(true);
-                }
-                itemFrame.getPersistentDataContainer().set(Keys.INVISIBLE_ITEM_FRAME.key(), PersistentDataType.BYTE, (byte) 1);
-            });
+        if (!player.hasPermission("craftableinvisibleitemframes.place")) {
+            event.setCancelled(true);
+            return;
         }
+
+        scheduler.runAtEntity(hanging, manage -> {
+            ItemFrame itemFrame = (ItemFrame) hanging;
+            if (!placed_item_frames_have_glowing_outlines) {
+                itemFrame.setVisible(false);
+            } else {
+                itemFrame.setVisible(true);
+                itemFrame.setGlowing(true);
+            }
+            itemFrame.getPersistentDataContainer().set(Keys.INVISIBLE_ITEM_FRAME.key(), PersistentDataType.BYTE, (byte) 1);
+        });
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -91,7 +87,7 @@ public class RegularInvisibleItemFrames implements PluginModule, Listener {
         droppedFrameLocation.setRemoval(scheduler.runLater(() -> droppedRegularFrames.remove(droppedFrameLocation), 1, TimeUnit.SECONDS));
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onItemSpawn(ItemSpawnEvent event) {
         Item itemEntity = event.getEntity();
         if (!itemEntity.getItemStack().getType().equals(Material.ITEM_FRAME)) return;
@@ -103,12 +99,12 @@ public class RegularInvisibleItemFrames implements PluginModule, Listener {
                 itemEntity.setItemStack(new InvisibleItemFrame(1, CommonUtil.getRandomNearbyPlayerLang(itemEntity.getLocation())));
                 droppedFrameLocation.getRemoval().cancel();
                 droppedFrameLocationIterator.remove();
-                break;
+                return;
             }
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         Entity clicked = event.getRightClicked();
         if (!clicked.getType().equals(EntityType.ITEM_FRAME)) return;
@@ -123,7 +119,7 @@ public class RegularInvisibleItemFrames implements PluginModule, Listener {
         }, 50, TimeUnit.MILLISECONDS);
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         Entity damaged = event.getEntity();
         if (!damaged.getType().equals(EntityType.ITEM_FRAME)) return;

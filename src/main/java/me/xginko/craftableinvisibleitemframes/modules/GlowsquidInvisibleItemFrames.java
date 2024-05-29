@@ -54,13 +54,13 @@ public class GlowsquidInvisibleItemFrames implements PluginModule, Listener {
         HandlerList.unregisterAll(this);
     }
 
-    private boolean isInvisibleGlowItemFrame(ItemStack itemStack) {
+    private static boolean isInvisibleGlowItemFrame(ItemStack itemStack) {
         return itemStack != null
         && itemStack.getType().equals(Material.GLOW_ITEM_FRAME)
         && itemStack.getItemMeta().getPersistentDataContainer().has(Keys.INVISIBLE_GLOW_ITEM_FRAME.key(), PersistentDataType.BYTE);
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onCraft(PrepareItemCraftEvent event) {
         if (
                 event.getRecipe() instanceof ShapedRecipe shaped
@@ -104,29 +104,25 @@ public class GlowsquidInvisibleItemFrames implements PluginModule, Listener {
     private void onHangingPlace(HangingPlaceEvent event) {
         Hanging hanging = event.getEntity();
         if (!hanging.getType().equals(EntityType.GLOW_ITEM_FRAME)) return;
+        if (!isInvisibleGlowItemFrame(event.getItemStack())) return;
         final Player player = event.getPlayer();
         if (player == null) return;
 
-        if (
-                isInvisibleGlowItemFrame(player.getInventory().getItemInMainHand())
-                || isInvisibleGlowItemFrame(player.getInventory().getItemInOffHand())
-        ) {
-            if (!player.hasPermission("craftableinvisibleitemframes.place")) {
-                event.setCancelled(true);
-                return;
-            }
-
-            scheduler.runAtEntity(hanging, manage -> {
-                GlowItemFrame glowItemFrame = (GlowItemFrame) hanging;
-                if (!placed_item_frames_have_glowing_outlines) {
-                    glowItemFrame.setVisible(false);
-                } else {
-                    glowItemFrame.setVisible(true);
-                    glowItemFrame.setGlowing(true);
-                }
-                glowItemFrame.getPersistentDataContainer().set(Keys.INVISIBLE_GLOW_ITEM_FRAME.key(), PersistentDataType.BYTE, (byte) 1);
-            });
+        if (!player.hasPermission("craftableinvisibleitemframes.place")) {
+            event.setCancelled(true);
+            return;
         }
+
+        scheduler.runAtEntity(hanging, manage -> {
+            GlowItemFrame glowItemFrame = (GlowItemFrame) hanging;
+            if (!placed_item_frames_have_glowing_outlines) {
+                glowItemFrame.setVisible(false);
+            } else {
+                glowItemFrame.setVisible(true);
+                glowItemFrame.setGlowing(true);
+            }
+            glowItemFrame.getPersistentDataContainer().set(Keys.INVISIBLE_GLOW_ITEM_FRAME.key(), PersistentDataType.BYTE, (byte) 1);
+        });
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -141,7 +137,7 @@ public class GlowsquidInvisibleItemFrames implements PluginModule, Listener {
         droppedFrameLocation.setRemoval(scheduler.runLater(() -> droppedGlowsquidFrames.remove(droppedFrameLocation), 1, TimeUnit.SECONDS));
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onItemSpawn(ItemSpawnEvent event) {
         Item itemEntity = event.getEntity();
         if (!itemEntity.getItemStack().getType().equals(Material.GLOW_ITEM_FRAME)) return;
@@ -158,7 +154,7 @@ public class GlowsquidInvisibleItemFrames implements PluginModule, Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         Entity clicked = event.getRightClicked();
         if (!clicked.getType().equals(EntityType.GLOW_ITEM_FRAME)) return;
@@ -173,7 +169,7 @@ public class GlowsquidInvisibleItemFrames implements PluginModule, Listener {
         }, 50, TimeUnit.MILLISECONDS);
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         Entity damaged = event.getEntity();
         if (!damaged.getType().equals(EntityType.GLOW_ITEM_FRAME)) return;

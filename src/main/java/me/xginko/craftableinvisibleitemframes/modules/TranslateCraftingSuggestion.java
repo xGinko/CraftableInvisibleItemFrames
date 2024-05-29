@@ -32,7 +32,7 @@ public class TranslateCraftingSuggestion implements PluginModule, Listener {
         HandlerList.unregisterAll(this);
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onCraft(PrepareItemCraftEvent event) {
         if (
                 event.getView().getPlayer() instanceof Player player
