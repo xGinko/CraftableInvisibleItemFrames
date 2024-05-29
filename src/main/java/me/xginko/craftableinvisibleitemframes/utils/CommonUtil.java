@@ -10,6 +10,7 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Random;
@@ -38,6 +39,6 @@ public class CommonUtil {
     public static Locale getRandomNearbyPlayerLang(Location location) {
         Collection<Player> nearbyPlayers = location.getNearbyPlayers(4,4,4);
         if (nearbyPlayers.isEmpty()) return CraftableInvisibleItemFrames.getConfiguration().default_lang;
-        return nearbyPlayers.stream().toList().get(new Random().nextInt(nearbyPlayers.size())).locale();
+        return new ArrayList<>(nearbyPlayers).get(new Random().nextInt(nearbyPlayers.size())).locale();
     }
 }
