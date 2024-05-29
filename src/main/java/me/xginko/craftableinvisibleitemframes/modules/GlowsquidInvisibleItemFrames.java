@@ -3,8 +3,8 @@ package me.xginko.craftableinvisibleitemframes.modules;
 import com.tcoded.folialib.impl.ServerImplementation;
 import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
 import me.xginko.craftableinvisibleitemframes.enums.Keys;
-import me.xginko.craftableinvisibleitemframes.models.InvisibleGlowItemFrame;
 import me.xginko.craftableinvisibleitemframes.models.DroppedFrameLocation;
+import me.xginko.craftableinvisibleitemframes.models.InvisibleGlowItemFrame;
 import me.xginko.craftableinvisibleitemframes.utils.CommonUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
@@ -20,7 +20,6 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.HashSet;
@@ -56,12 +55,9 @@ public class GlowsquidInvisibleItemFrames implements PluginModule, Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onCraft(PrepareItemCraftEvent event) {
-        if (
-                event.getRecipe() instanceof ShapedRecipe shaped
-                && shaped.getKey().equals(Keys.INVISIBLE_ITEM_FRAME_RECIPE.key())
-        ) return;
-
-        if (!(event.getView().getPlayer() instanceof Player player)) return;
+        if (!CommonUtil.isInvisibleItemFrameRecipe(event.getRecipe())) return;
+        if (!(event.getView().getPlayer() instanceof Player)) return;
+        Player player = (Player) event.getView().getPlayer();
 
         boolean foundInvisIframe = false;
         boolean foundGlowIncSac = false;

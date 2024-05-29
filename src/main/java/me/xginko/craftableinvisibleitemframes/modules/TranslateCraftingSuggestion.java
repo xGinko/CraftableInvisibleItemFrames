@@ -1,8 +1,8 @@
 package me.xginko.craftableinvisibleitemframes.modules;
 
 import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
-import me.xginko.craftableinvisibleitemframes.enums.Keys;
 import me.xginko.craftableinvisibleitemframes.models.InvisibleItemFrame;
+import me.xginko.craftableinvisibleitemframes.utils.CommonUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -10,7 +10,6 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.ShapedRecipe;
 
 public class TranslateCraftingSuggestion implements PluginModule, Listener {
 
@@ -34,12 +33,11 @@ public class TranslateCraftingSuggestion implements PluginModule, Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onCraft(PrepareItemCraftEvent event) {
-        if (
-                event.getView().getPlayer() instanceof Player player
-                && player.hasPermission("craftableinvisibleitemframes.craft")
-                && event.getRecipe() instanceof ShapedRecipe shapedRecipe
-                && shapedRecipe.getKey().equals(Keys.INVISIBLE_ITEM_FRAME_RECIPE.key())
-        ) {
+        if (!CommonUtil.isInvisibleItemFrameRecipe(event.getRecipe())) return;
+        if (!(event.getView().getPlayer() instanceof Player)) return;
+        Player player = (Player) event.getView().getPlayer();
+
+        if (player.hasPermission("craftableinvisibleitemframes.craft")) {
             final ItemStack resultItem = event.getInventory().getResult();
             event.getInventory().setResult(new InvisibleItemFrame(resultItem == null ? 8 : resultItem.getAmount(), player.locale()));
         }

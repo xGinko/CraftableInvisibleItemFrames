@@ -26,10 +26,12 @@ public class GetSubCommand extends SubCommand {
 
     @Override
     public void perform(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player player)) {
+        if (!(sender instanceof Player)) {
             sender.sendMessage(Component.text("Command can't be executed from console.").color(NamedTextColor.RED));
             return;
         }
+
+        Player player = (Player) sender;
 
         if (player.hasPermission("craftableinvisibleitemframes.cmd.get")) {
             player.getInventory().addItem(new InvisibleItemFrame(64, player.locale())).forEach((index, itemsThatDidNotFit) -> {

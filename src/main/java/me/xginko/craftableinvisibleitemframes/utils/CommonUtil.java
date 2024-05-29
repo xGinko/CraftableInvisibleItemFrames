@@ -6,6 +6,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Collection;
@@ -24,6 +26,13 @@ public class CommonUtil {
         return  itemStack != null
                 && itemStack.getType() == Material.GLOW_ITEM_FRAME
                 && itemStack.getItemMeta().getPersistentDataContainer().has(Keys.INVISIBLE_GLOW_ITEM_FRAME.key(), PersistentDataType.BYTE);
+    }
+
+    public static boolean isInvisibleItemFrameRecipe(Recipe recipe) {
+        if (recipe instanceof ShapedRecipe) {
+            return ((ShapedRecipe) recipe).getKey().equals(Keys.INVISIBLE_ITEM_FRAME_RECIPE.key());
+        }
+        return false;
     }
 
     public static Locale getRandomNearbyPlayerLang(Location location) {

@@ -3,6 +3,7 @@ package me.xginko.craftableinvisibleitemframes.config;
 import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
 import me.xginko.craftableinvisibleitemframes.enums.Keys;
 import me.xginko.craftableinvisibleitemframes.models.InvisibleItemFrame;
+import me.xginko.craftableinvisibleitemframes.utils.CommonUtil;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -137,7 +138,7 @@ public class Config {
         plugin.getCompatibleScheduler().runNextTick(removeRecipe -> {
             Iterator<Recipe> recipeIterator = plugin.getServer().recipeIterator();
             while (recipeIterator.hasNext()) {
-                if (recipeIterator.next() instanceof ShapedRecipe shapedRecipe && shapedRecipe.getKey().equals(Keys.INVISIBLE_ITEM_FRAME_RECIPE.key())) {
+                if (CommonUtil.isInvisibleItemFrameRecipe(recipeIterator.next())) {
                     recipeIterator.remove();
                     return;
                 }

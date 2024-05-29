@@ -6,7 +6,7 @@
 
     <groupId>me.xGinko</groupId>
     <artifactId>CraftableInvisibleItemFrames</artifactId>
-    <version>1.4.0</version>
+    <version>1.5.0</version>
     <packaging>jar</packaging>
 
     <name>CraftableInvisibleItemFrames</name>
@@ -14,7 +14,7 @@
     <url>https://github.com/xGinko/CraftableInvisibleItemFrames</url>
 
     <properties>
-        <java.version>16</java.version>
+        <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 

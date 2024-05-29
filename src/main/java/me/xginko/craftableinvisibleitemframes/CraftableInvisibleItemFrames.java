@@ -8,9 +8,7 @@ import me.xginko.craftableinvisibleitemframes.config.LanguageCache;
 import me.xginko.craftableinvisibleitemframes.enums.Keys;
 import me.xginko.craftableinvisibleitemframes.modules.PluginModule;
 import org.bstats.bukkit.Metrics;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemFrame;
@@ -19,16 +17,15 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 import java.util.jar.JarFile;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
 
 public final class CraftableInvisibleItemFrames extends JavaPlugin {
 
@@ -92,7 +89,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         return getLang(locale.toString().toLowerCase());
     }
     public static LanguageCache getLang(CommandSender commandSender) {
-        return commandSender instanceof Player player ? getLang(player.locale()) : getLang(config.default_lang);
+        return commandSender instanceof Player ? getLang(((Player) commandSender).locale()) : getLang(config.default_lang);
     }
     public static LanguageCache getLang(String lang) {
         return config.auto_lang ? languageCacheMap.getOrDefault(lang.replace("-", "_"), languageCacheMap.get(config.default_lang.toString().toLowerCase())) : languageCacheMap.get(config.default_lang.toString().toLowerCase());
@@ -115,72 +112,76 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
 
     public void reapplyOutlineSettingsToAllLoadedInvisibleFrames() {
         for (World world : getServer().getWorlds()) {
-            for (Entity entity : world.getEntities()) {
-                if (!(entity instanceof ItemFrame itemFrame)) continue;
-                scheduler.runAtEntity(itemFrame, applyOutlineSettings -> {
-                    if (itemFrame.getPersistentDataContainer().has(Keys.INVISIBLE_GLOW_ITEM_FRAME.key(), PersistentDataType.BYTE)) {
-                        if (itemFrame.getItem().getType().equals(Material.AIR) && config.glowsquid_placed_item_frames_have_glowing_outlines) {
-                            itemFrame.setGlowing(true);
-                            itemFrame.setVisible(true);
-                        } else if (!itemFrame.getItem().getType().equals(Material.AIR)) {
-                            itemFrame.setGlowing(false);
-                            itemFrame.setVisible(false);
+            scheduler.runNextTick(forEachWorld -> {
+                for (Chunk chunk : world.getLoadedChunks()) {
+                    // Workaround due to FoliaLib not having a method that allows passing chunk x and y
+                    Location chunkLoc = new Location(world, chunk.getX() << 4, world.getMaxHeight(), chunk.getZ() << 4);
+                    scheduler.runAtLocation(chunkLoc, forEachChunk -> {
+                        if (!chunk.isLoaded()) return;
+
+                        for (Entity entity : world.getEntities()) {
+                            if (!entity.getType().name().contains("ITEM_FRAME")) continue;
+
+                            ItemFrame itemFrame = (ItemFrame) entity;
+
+                            scheduler.runAtEntity(itemFrame, applyOutlineSettings -> {
+                                if (itemFrame.getPersistentDataContainer().has(Keys.INVISIBLE_GLOW_ITEM_FRAME.key(), PersistentDataType.BYTE)) {
+                                    if (itemFrame.getItem().getType().equals(Material.AIR) && config.glowsquid_placed_item_frames_have_glowing_outlines) {
+                                        itemFrame.setGlowing(true);
+                                        itemFrame.setVisible(true);
+                                    } else if (!itemFrame.getItem().getType().equals(Material.AIR)) {
+                                        itemFrame.setGlowing(false);
+                                        itemFrame.setVisible(false);
+                                    }
+                                } else if (itemFrame.getPersistentDataContainer().has(Keys.INVISIBLE_ITEM_FRAME.key(), PersistentDataType.BYTE)) {
+                                    if (itemFrame.getItem().getType().equals(Material.AIR) && config.regular_placed_item_frames_have_glowing_outlines) {
+                                        itemFrame.setGlowing(true);
+                                        itemFrame.setVisible(true);
+                                    } else if (!itemFrame.getItem().getType().equals(Material.AIR)) {
+                                        itemFrame.setGlowing(false);
+                                        itemFrame.setVisible(false);
+                                    }
+                                }
+                            });
                         }
-                    } else if (itemFrame.getPersistentDataContainer().has(Keys.INVISIBLE_ITEM_FRAME.key(), PersistentDataType.BYTE)) {
-                        if (itemFrame.getItem().getType().equals(Material.AIR) && config.regular_placed_item_frames_have_glowing_outlines) {
-                            itemFrame.setGlowing(true);
-                            itemFrame.setVisible(true);
-                        } else if (!itemFrame.getItem().getType().equals(Material.AIR)) {
-                            itemFrame.setGlowing(false);
-                            itemFrame.setVisible(false);
-                        }
-                    }
-                });
-            }
+                    });
+                }
+            });
         }
     }
 
     public void reloadLang() {
         languageCacheMap = new HashMap<>();
         try {
-            File langDirectory = new File(instance.getDataFolder() + File.separator + "lang");
-            Files.createDirectories(langDirectory.toPath());
-            for (String fileName : getDefaultLanguageFiles()) {
-                String localeString = fileName.substring(fileName.lastIndexOf('/') + 1, fileName.lastIndexOf('.'));
-                logger.info(String.format("Found language file for %s", localeString));
-                LanguageCache langCache = new LanguageCache(localeString);
-                languageCacheMap.put(localeString, langCache);
+            for (String localeString : getAvailableTranslations()) {
+                logger.info("Found language file for " + localeString);
+                languageCacheMap.put(localeString, new LanguageCache(localeString));
             }
-            Pattern langPattern = Pattern.compile("([a-z]{1,3}_[a-z]{1,3})(\\.yml)", Pattern.CASE_INSENSITIVE);
-            for (File langFile : langDirectory.listFiles()) {
-                Matcher langMatcher = langPattern.matcher(langFile.getName());
-                if (langMatcher.find()) {
-                    String localeString = langMatcher.group(1).toLowerCase();
-                    if(!languageCacheMap.containsKey(localeString)) {
-                        logger.info(String.format("Found language file for %s", localeString));
-                        LanguageCache langCache = new LanguageCache(localeString);
-                        languageCacheMap.put(localeString, langCache);
-                    }
-                }
+        } catch (Throwable t) {
+            logger.severe("Error loading language files! - " + t.getLocalizedMessage());
+        } finally {
+            if (languageCacheMap.isEmpty()) {
+                logger.severe("Unable to load translations. Disabling.");
+                getServer().getPluginManager().disablePlugin(this);
+            } else {
+                logger.info("Loaded " + languageCacheMap.size() + " translations");
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            logger.severe("Error loading language files! Language files will not reload to avoid errors, make sure to correct this before restarting the server!");
         }
     }
 
-    private Set<String> getDefaultLanguageFiles() {
-        Set<String> languageFiles = new HashSet<>();
-        try (JarFile jarFile = new JarFile(this.getFile())) {
-            jarFile.entries().asIterator().forEachRemaining(jarFileEntry -> {
-                final String path = jarFileEntry.getName();
-                if (path.startsWith("lang/") && path.endsWith(".yml"))
-                    languageFiles.add(path);
-            });
-        } catch (IOException e) {
-            logger.severe("Error while getting default language files! - " + e.getLocalizedMessage());
-            e.printStackTrace();
+    private SortedSet<String> getAvailableTranslations() {
+        try (final JarFile pluginJar = new JarFile(getFile())) {
+            final File langDirectory = new File(getDataFolder() + "/lang");
+            Files.createDirectories(langDirectory.toPath());
+            final Pattern langPattern = Pattern.compile("([a-z]{1,3}_[a-z]{1,3})(\\.yml)", Pattern.CASE_INSENSITIVE);
+            return Stream.concat(pluginJar.stream().map(ZipEntry::getName), Arrays.stream(langDirectory.listFiles()).map(File::getName))
+                    .map(langPattern::matcher)
+                    .filter(Matcher::find)
+                    .map(matcher -> matcher.group(1))
+                    .collect(Collectors.toCollection(TreeSet::new));
+        } catch (Throwable t) {
+            logger.severe("Failed querying for available translations! - " + t.getLocalizedMessage());
+            return new TreeSet<>();
         }
-        return languageFiles;
     }
 }
