@@ -1,19 +1,15 @@
 package me.xginko.craftableinvisibleitemframes;
 
 import com.tcoded.folialib.FoliaLib;
-import com.tcoded.folialib.impl.ServerImplementation;
 import me.xginko.craftableinvisibleitemframes.commands.iframe.IFrameCommand;
 import me.xginko.craftableinvisibleitemframes.config.Config;
 import me.xginko.craftableinvisibleitemframes.config.LanguageCache;
-import me.xginko.craftableinvisibleitemframes.enums.Keys;
+import me.xginko.craftableinvisibleitemframes.models.ReApplyGlowOutlinesTask;
 import me.xginko.craftableinvisibleitemframes.modules.PluginModule;
 import org.bstats.bukkit.Metrics;
-import org.bukkit.*;
+import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -30,8 +26,8 @@ import java.util.zip.ZipEntry;
 public final class CraftableInvisibleItemFrames extends JavaPlugin {
 
     private static CraftableInvisibleItemFrames instance;
-    private ServerImplementation scheduler;
-    private static HashMap<String, LanguageCache> languageCacheMap;
+    private static FoliaLib foliaLib;
+    private static Map<String, LanguageCache> languageCacheMap;
     private static Config config;
     private static Logger logger;
     private static boolean isGlowVariantCompatible;
@@ -40,8 +36,8 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
     public void onEnable() {
         instance = this;
         logger = getLogger();
+        foliaLib = new FoliaLib(this);
         new Metrics(this, 17841);
-        scheduler = new FoliaLib(this).getImpl();
 
         logger.info("                         ");
         logger.info("           /*\\           ");
@@ -66,23 +62,23 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         logger.info("Loading Config");
         reloadConfiguration();
         logger.info("Registering Commands");
-        getCommand("iframe").setExecutor(new IFrameCommand());
+        new IFrameCommand().enable();
         logger.info("Done.");
     }
 
     public static CraftableInvisibleItemFrames getInstance()  {
         return instance;
     }
-    public static Config getConfiguration() {
+    public static Config config() {
         return config;
     }
     public static NamespacedKey getKey(final String key) {
         return new NamespacedKey(instance, key);
     }
-    public ServerImplementation getCompatibleScheduler() {
-        return scheduler;
+    public static FoliaLib getFoliaLib() {
+        return foliaLib;
     }
-    public static Logger getLog() {
+    public static Logger logger() {
         return logger;
     }
     public static LanguageCache getLang(Locale locale) {
@@ -101,53 +97,15 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
     public void reloadPlugin() {
         reloadLang();
         reloadConfiguration();
-        reapplyOutlineSettingsToAllLoadedInvisibleFrames();
+        foliaLib.getImpl().runNextTick(new ReApplyGlowOutlinesTask(
+                config.glowsquid_placed_item_frames_have_glowing_outlines,
+                config.regular_placed_item_frames_have_glowing_outlines));
     }
 
     public void reloadConfiguration() {
         config = new Config();
         PluginModule.reloadModules();
         config.saveConfig();
-    }
-
-    public void reapplyOutlineSettingsToAllLoadedInvisibleFrames() {
-        for (World world : getServer().getWorlds()) {
-            scheduler.runNextTick(forEachWorld -> {
-                for (Chunk chunk : world.getLoadedChunks()) {
-                    // Workaround due to FoliaLib not having a method that allows passing chunk x and y
-                    Location chunkLoc = new Location(world, chunk.getX() << 4, world.getMaxHeight(), chunk.getZ() << 4);
-                    scheduler.runAtLocation(chunkLoc, forEachChunk -> {
-                        if (!chunk.isLoaded()) return;
-
-                        for (Entity entity : world.getEntities()) {
-                            if (!entity.getType().name().contains("ITEM_FRAME")) continue;
-
-                            ItemFrame itemFrame = (ItemFrame) entity;
-
-                            scheduler.runAtEntity(itemFrame, applyOutlineSettings -> {
-                                if (itemFrame.getPersistentDataContainer().has(Keys.INVISIBLE_GLOW_ITEM_FRAME.key(), PersistentDataType.BYTE)) {
-                                    if (itemFrame.getItem().getType().equals(Material.AIR) && config.glowsquid_placed_item_frames_have_glowing_outlines) {
-                                        itemFrame.setGlowing(true);
-                                        itemFrame.setVisible(true);
-                                    } else if (!itemFrame.getItem().getType().equals(Material.AIR)) {
-                                        itemFrame.setGlowing(false);
-                                        itemFrame.setVisible(false);
-                                    }
-                                } else if (itemFrame.getPersistentDataContainer().has(Keys.INVISIBLE_ITEM_FRAME.key(), PersistentDataType.BYTE)) {
-                                    if (itemFrame.getItem().getType().equals(Material.AIR) && config.regular_placed_item_frames_have_glowing_outlines) {
-                                        itemFrame.setGlowing(true);
-                                        itemFrame.setVisible(true);
-                                    } else if (!itemFrame.getItem().getType().equals(Material.AIR)) {
-                                        itemFrame.setGlowing(false);
-                                        itemFrame.setVisible(false);
-                                    }
-                                }
-                            });
-                        }
-                    });
-                }
-            });
-        }
     }
 
     public void reloadLang() {
@@ -158,7 +116,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
                 languageCacheMap.put(localeString, new LanguageCache(localeString));
             }
         } catch (Throwable t) {
-            logger.severe("Error loading language files! - " + t.getLocalizedMessage());
+            logger.severe("Error loading translation file(s)! - " + t.getLocalizedMessage());
         } finally {
             if (languageCacheMap.isEmpty()) {
                 logger.severe("Unable to load translations. Disabling.");

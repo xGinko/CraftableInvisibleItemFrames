@@ -24,17 +24,18 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class GlowsquidInvisibleItemFrames implements PluginModule, Listener {
 
     private final ServerImplementation scheduler;
-    private final HashSet<DroppedFrameLocation> droppedGlowsquidFrames = new HashSet<>();
+    private final Set<DroppedFrameLocation> droppedGlowsquidFrames = new HashSet<>();
     private final boolean placed_item_frames_have_glowing_outlines;
 
     protected GlowsquidInvisibleItemFrames() {
-        this.scheduler = CraftableInvisibleItemFrames.getInstance().getCompatibleScheduler();
-        this.placed_item_frames_have_glowing_outlines = CraftableInvisibleItemFrames.getConfiguration().glowsquid_placed_item_frames_have_glowing_outlines;
+        this.scheduler = CraftableInvisibleItemFrames.getFoliaLib().getImpl();
+        this.placed_item_frames_have_glowing_outlines = CraftableInvisibleItemFrames.config().glowsquid_placed_item_frames_have_glowing_outlines;
     }
 
     @Override
@@ -45,7 +46,7 @@ public class GlowsquidInvisibleItemFrames implements PluginModule, Listener {
 
     @Override
     public boolean shouldEnable() {
-        return CraftableInvisibleItemFrames.getConfiguration().glowsquid_invisible_itemframes_are_enabled;
+        return CraftableInvisibleItemFrames.config().glowsquid_invisible_itemframes_are_enabled;
     }
 
     @Override

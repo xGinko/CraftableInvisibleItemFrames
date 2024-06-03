@@ -1,66 +1,75 @@
 package me.xginko.craftableinvisibleitemframes.commands.iframe;
 
+import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
 import me.xginko.craftableinvisibleitemframes.commands.SubCommand;
 import me.xginko.craftableinvisibleitemframes.commands.iframe.subcommands.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class IFrameCommand implements CommandExecutor, TabCompleter {
+public class IFrameCommand extends Command {
 
-    private final List<SubCommand> subcommands = new ArrayList<>(5);
-    private final List<String> tabCompleter = new ArrayList<>(5);
+    private final List<SubCommand> subcommands;
+    private final List<String> tabCompleter;
 
     public IFrameCommand() {
-        subcommands.add(new ReloadSubCommand());
-        subcommands.add(new AddItemSubCommand());
-        subcommands.add(new RemoveItemSubCommand());
-        subcommands.add(new GetSubCommand());
-        subcommands.add(new VersionSubCommand());
-        for (SubCommand subcommand : subcommands) {
-            tabCompleter.add(subcommand.getName());
-        }
+        super(
+                "iframe",
+                "InvisibleItemframes admin commands",
+                "/iframes <version, reload, get, add, remove>",
+                Collections.singletonList("/invisframes")
+        );
+        subcommands = Arrays.asList(
+                new ReloadSubCommand(),
+                new VersionSubCommand(),
+                new GetSubCommand(),
+                new AddItemSubCommand(),
+                new RemoveItemSubCommand());
+        tabCompleter = subcommands.stream().map(SubCommand::label).collect(Collectors.toList());
+    }
+
+    @SuppressWarnings("deprecation")
+    public void enable() {
+        CraftableInvisibleItemFrames plugin = CraftableInvisibleItemFrames.getInstance();
+        plugin.getServer().getCommandMap().register(plugin.getDescription().getName().toLowerCase(), this);
     }
 
     @Override
-    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
-        return args.length == 1 ? tabCompleter : null;
+    public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
+            throws CommandException, IllegalArgumentException
+    {
+        return args.length == 1 ? tabCompleter : Collections.emptyList();
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
-        if (args.length > 0) {
-            boolean cmdExists = false;
-            for (SubCommand subcommand : subcommands) {
-                if (args[0].equalsIgnoreCase(subcommand.getName())) {
-                    subcommand.perform(sender, args);
-                    cmdExists = true;
+    public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
+        if (args.length >= 1) {
+            for (SubCommand subCommand : subcommands) {
+                if (args[0].equalsIgnoreCase(subCommand.label())) {
+                    return subCommand.execute(sender, commandLabel, args);
                 }
             }
-            if (!cmdExists) showCommandOverviewTo(sender);
-        } else {
-            showCommandOverviewTo(sender);
         }
+
+        showCommandOverviewTo(sender);
         return true;
     }
 
     private void showCommandOverviewTo(CommandSender sender) {
-        sender.sendMessage(Component.text("-----------------------------------------------------").color(NamedTextColor.GRAY));
-        sender.sendMessage(Component.text("CraftableInvisibleItemFrames Commands ").color(NamedTextColor.YELLOW));
-        sender.sendMessage(Component.text("-----------------------------------------------------").color(NamedTextColor.GRAY));
+        sender.sendMessage(Component.empty());
+        sender.sendMessage(Component.text(" CraftableInvisibleItemFrames Commands ").color(NamedTextColor.WHITE));
+        sender.sendMessage(Component.empty());
         for (SubCommand subcommand : subcommands) {
-            sender.sendMessage(Component.text(subcommand.getSyntax()).color(NamedTextColor.WHITE)
+            sender.sendMessage(Component.text(subcommand.syntax()).color(NamedTextColor.WHITE)
                     .append(Component.text(" - ").color(NamedTextColor.DARK_GRAY))
-                    .append(Component.text(subcommand.getDescription())).color(NamedTextColor.GRAY)
-            );
+                    .append(Component.text(subcommand.desc())).color(NamedTextColor.GRAY));
         }
-        sender.sendMessage(Component.text("-----------------------------------------------------").color(NamedTextColor.GRAY));
+        sender.sendMessage(Component.empty());
     }
 }

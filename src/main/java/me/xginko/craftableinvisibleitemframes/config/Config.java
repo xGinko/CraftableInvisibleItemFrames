@@ -77,7 +77,7 @@ public class Config {
             config.save(configPath);
             config = CraftableInvisibleItemFrames.getInstance().getConfig();
         } catch (IOException e) {
-            CraftableInvisibleItemFrames.getLog().severe("Failed to save configuration file! - " + e.getLocalizedMessage());
+            CraftableInvisibleItemFrames.logger().severe("Failed to save configuration file! - " + e.getLocalizedMessage());
         }
     }
 
@@ -124,7 +124,7 @@ public class Config {
 
     public void registerRecipe(List<ItemStack> centerItems) {
         CraftableInvisibleItemFrames plugin = CraftableInvisibleItemFrames.getInstance();
-        plugin.getCompatibleScheduler().runNextTick(addRecipe -> {
+        plugin.getFoliaLib().runNextTick(addRecipe -> {
             plugin.getServer().addRecipe(new ShapedRecipe(Keys.INVISIBLE_ITEM_FRAME_RECIPE.key(), new InvisibleItemFrame(8))
                     .shape("FFF", "FPF", "FFF")
                     .setIngredient('F', Material.ITEM_FRAME)
@@ -135,7 +135,7 @@ public class Config {
 
     public void unregisterRecipe() {
         CraftableInvisibleItemFrames plugin = CraftableInvisibleItemFrames.getInstance();
-        plugin.getCompatibleScheduler().runNextTick(removeRecipe -> {
+        plugin.getFoliaLib().runNextTick(removeRecipe -> {
             Iterator<Recipe> recipeIterator = plugin.getServer().recipeIterator();
             while (recipeIterator.hasNext()) {
                 if (CommonUtil.isInvisibleItemFrameRecipe(recipeIterator.next())) {

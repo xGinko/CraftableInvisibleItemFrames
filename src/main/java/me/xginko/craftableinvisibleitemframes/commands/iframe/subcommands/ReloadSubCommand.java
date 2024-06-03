@@ -5,31 +5,36 @@ import me.xginko.craftableinvisibleitemframes.commands.SubCommand;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 public class ReloadSubCommand extends SubCommand {
 
     @Override
-    public String getName() {
+    public String label() {
         return "reload";
     }
 
     @Override
-    public String getDescription() {
+    public String desc() {
         return "Reload the plugin configuration";
     }
 
     @Override
-    public String getSyntax() {
+    public String syntax() {
         return "/iframe reload";
     }
 
     @Override
-    public void perform(CommandSender sender, String[] args) {
-        if (sender.hasPermission("craftableinvisibleitemframes.cmd.reload")) {
+    public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
+        if (!sender.hasPermission("craftableinvisibleitemframes.cmd.reload")) {
+            sender.sendMessage(CraftableInvisibleItemFrames.getLang(sender).no_permission);
+            return true;
+        }
+
+        CraftableInvisibleItemFrames.getFoliaLib().getImpl().runNextTick(reload -> {
             CraftableInvisibleItemFrames.getInstance().reloadPlugin();
             sender.sendMessage(Component.text("Reload complete.").color(NamedTextColor.GREEN));
-        } else {
-            sender.sendMessage(CraftableInvisibleItemFrames.getLang(sender).no_permission);
-        }
+        });
+        return true;
     }
 }

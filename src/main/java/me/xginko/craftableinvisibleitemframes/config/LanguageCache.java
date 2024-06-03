@@ -36,7 +36,7 @@ public class LanguageCache {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InvalidConfigurationException e) {
-            CraftableInvisibleItemFrames.getLog().warning("Translation file " + langFile + " is not formatted properly. Skipping it.");
+            CraftableInvisibleItemFrames.logger().warning("Translation file " + langFile + " is not formatted properly. Skipping it.");
         }
     }
 

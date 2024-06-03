@@ -23,7 +23,7 @@ public class TranslateCraftingSuggestion implements PluginModule, Listener {
 
     @Override
     public boolean shouldEnable() {
-        return CraftableInvisibleItemFrames.getConfiguration().auto_lang;
+        return CraftableInvisibleItemFrames.config().auto_lang;
     }
 
     @Override

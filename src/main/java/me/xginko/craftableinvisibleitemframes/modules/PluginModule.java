@@ -17,9 +17,9 @@ public interface PluginModule {
         modules.clear();
 
         modules.add(new RegularInvisibleItemFrames());
-        if (CraftableInvisibleItemFrames.getConfiguration().glowsquid_invisible_itemframes_are_enabled) {
+        if (CraftableInvisibleItemFrames.config().glowsquid_invisible_itemframes_are_enabled) {
             if (CraftableInvisibleItemFrames.isGlowVariantCompatible()) modules.add(new GlowsquidInvisibleItemFrames());
-            else CraftableInvisibleItemFrames.getLog().warning("Glow item frames can not be enabled on this version.");
+            else CraftableInvisibleItemFrames.logger().warning("Glow item frames can not be enabled on this version.");
         }
         modules.add(new TranslateCraftingSuggestion());
 

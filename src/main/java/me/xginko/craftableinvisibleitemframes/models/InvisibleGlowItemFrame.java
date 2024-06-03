@@ -14,7 +14,7 @@ import java.util.Locale;
 public class InvisibleGlowItemFrame extends ItemStack {
 
     public InvisibleGlowItemFrame(final int stackSize) {
-        this(stackSize, CraftableInvisibleItemFrames.getConfiguration().default_lang);
+        this(stackSize, CraftableInvisibleItemFrames.config().default_lang);
     }
 
     public InvisibleGlowItemFrame(final int stackSize, final Locale locale) {
@@ -22,7 +22,7 @@ public class InvisibleGlowItemFrame extends ItemStack {
         ItemMeta meta = getItemMeta();
         meta.displayName(CraftableInvisibleItemFrames.getLang(locale).glow_invisible_item_frame);
         meta.getPersistentDataContainer().set(Keys.INVISIBLE_GLOW_ITEM_FRAME.key(), PersistentDataType.BYTE, (byte) 1);
-        if (CraftableInvisibleItemFrames.getConfiguration().glowsquid_item_frames_should_be_enchanted) {
+        if (CraftableInvisibleItemFrames.config().glowsquid_item_frames_should_be_enchanted) {
             meta.addEnchant(Enchantment.CHANNELING, 1, true);
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }

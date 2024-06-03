@@ -1,17 +1,13 @@
 name: CraftableInvisibleItemFrames
+prefix: InvisibleItemFrames
 version: '${project.version}'
 main: me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames
-api-version: 1.16
-folia-supported: true
-prefix: InvisibleItemFrames
 authors: [ xGinko ]
 description: ${project.description}
 website: ${project.url}
-commands:
-  iframe:
-    permission: craftableinvisibleitemframes.cmd
-    description: Gives the player an invisible item frame
-    usage: /iframe
+api-version: 1.16
+folia-supported: true
+
 permissions:
   craftableinvisibleitemframes.craft:
     description: Allows a player to craft an invisible itemframe

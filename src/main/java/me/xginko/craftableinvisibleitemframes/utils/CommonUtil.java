@@ -38,7 +38,7 @@ public class CommonUtil {
 
     public static Locale getRandomNearbyPlayerLang(Location location) {
         Collection<Player> nearbyPlayers = location.getNearbyPlayers(4,4,4);
-        if (nearbyPlayers.isEmpty()) return CraftableInvisibleItemFrames.getConfiguration().default_lang;
+        if (nearbyPlayers.isEmpty()) return CraftableInvisibleItemFrames.config().default_lang;
         return new ArrayList<>(nearbyPlayers).get(new Random().nextInt(nearbyPlayers.size())).locale();
     }
 }

@@ -3,8 +3,8 @@ package me.xginko.craftableinvisibleitemframes.modules;
 import com.tcoded.folialib.impl.ServerImplementation;
 import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
 import me.xginko.craftableinvisibleitemframes.enums.Keys;
-import me.xginko.craftableinvisibleitemframes.models.InvisibleItemFrame;
 import me.xginko.craftableinvisibleitemframes.models.DroppedFrameLocation;
+import me.xginko.craftableinvisibleitemframes.models.InvisibleItemFrame;
 import me.xginko.craftableinvisibleitemframes.utils.CommonUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
@@ -21,17 +21,18 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class RegularInvisibleItemFrames implements PluginModule, Listener {
 
     private final ServerImplementation scheduler;
-    private final HashSet<DroppedFrameLocation> droppedRegularFrames = new HashSet<>();
+    private final Set<DroppedFrameLocation> droppedRegularFrames = new HashSet<>();
     private final boolean placed_item_frames_have_glowing_outlines;
 
     protected RegularInvisibleItemFrames() {
-        this.scheduler = CraftableInvisibleItemFrames.getInstance().getCompatibleScheduler();
-        this.placed_item_frames_have_glowing_outlines = CraftableInvisibleItemFrames.getConfiguration().regular_placed_item_frames_have_glowing_outlines;
+        this.scheduler = CraftableInvisibleItemFrames.getFoliaLib().getImpl();
+        this.placed_item_frames_have_glowing_outlines = CraftableInvisibleItemFrames.config().regular_placed_item_frames_have_glowing_outlines;
     }
 
     @Override
@@ -42,7 +43,7 @@ public class RegularInvisibleItemFrames implements PluginModule, Listener {
 
     @Override
     public boolean shouldEnable() {
-        return CraftableInvisibleItemFrames.getConfiguration().regular_invisible_itemframes_are_enabled;
+        return CraftableInvisibleItemFrames.config().regular_invisible_itemframes_are_enabled;
     }
 
     @Override
