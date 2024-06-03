@@ -68,6 +68,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        PluginModule.modules.forEach(PluginModule::disable);
         isGlowVariantCompatible = false;
         if (metrics != null)
             metrics.shutdown();
