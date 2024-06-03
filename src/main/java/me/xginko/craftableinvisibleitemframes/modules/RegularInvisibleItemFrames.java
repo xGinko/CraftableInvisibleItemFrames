@@ -5,7 +5,7 @@ import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
 import me.xginko.craftableinvisibleitemframes.enums.Keys;
 import me.xginko.craftableinvisibleitemframes.models.DroppedFrameLocation;
 import me.xginko.craftableinvisibleitemframes.models.InvisibleItemFrame;
-import me.xginko.craftableinvisibleitemframes.utils.CommonUtil;
+import me.xginko.craftableinvisibleitemframes.utils.Util;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -19,19 +19,19 @@ import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
 
 public class RegularInvisibleItemFrames implements PluginModule, Listener {
 
     private final ServerImplementation scheduler;
-    private final Set<DroppedFrameLocation> droppedRegularFrames = new HashSet<>();
+    private final Set<DroppedFrameLocation> droppedRegularFrames = new CopyOnWriteArraySet<>();
     private final boolean placed_item_frames_have_glowing_outlines;
 
     protected RegularInvisibleItemFrames() {
-        this.scheduler = CraftableInvisibleItemFrames.getFoliaLib().getImpl();
+        this.scheduler = CraftableInvisibleItemFrames.foliaLib().getImpl();
         this.placed_item_frames_have_glowing_outlines = CraftableInvisibleItemFrames.config().regular_placed_item_frames_have_glowing_outlines;
     }
 
@@ -55,7 +55,7 @@ public class RegularInvisibleItemFrames implements PluginModule, Listener {
     private void onHangingPlace(HangingPlaceEvent event) {
         Hanging hanging = event.getEntity();
         if (!hanging.getType().equals(EntityType.ITEM_FRAME)) return;
-        if (!CommonUtil.isInvisibleItemFrame(event.getItemStack())) return;
+        if (!Util.isInvisibleItemFrame(event.getItemStack())) return;
         Player player = event.getPlayer();
         if (player == null) return;
 
@@ -79,7 +79,7 @@ public class RegularInvisibleItemFrames implements PluginModule, Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onHangingBreak(HangingBreakEvent event) {
         Hanging hanging = event.getEntity();
-        if (!hanging.getType().equals(EntityType.ITEM_FRAME)) return;
+        if (hanging.getType() != EntityType.ITEM_FRAME) return;
         if (!hanging.getPersistentDataContainer().has(Keys.INVISIBLE_ITEM_FRAME.key(), PersistentDataType.BYTE)) return;
 
         // Sets up a bounding box that checks for items near the frame and converts them
@@ -97,7 +97,7 @@ public class RegularInvisibleItemFrames implements PluginModule, Listener {
         while (droppedFrameLocationIterator.hasNext()) {
             DroppedFrameLocation droppedFrameLocation = droppedFrameLocationIterator.next();
             if (droppedFrameLocation.isFrame(itemEntity)) {
-                itemEntity.setItemStack(new InvisibleItemFrame(1, CommonUtil.getRandomNearbyPlayerLang(itemEntity.getLocation())));
+                itemEntity.setItemStack(new InvisibleItemFrame(1, Util.getRandomNearbyPlayerLang(itemEntity.getLocation())));
                 droppedFrameLocation.getRemoval().cancel();
                 droppedFrameLocationIterator.remove();
                 return;
@@ -113,7 +113,7 @@ public class RegularInvisibleItemFrames implements PluginModule, Listener {
 
         scheduler.runAtEntityLater(clicked, () -> {
             ItemFrame itemFrame = (ItemFrame) clicked;
-            if (!itemFrame.getItem().getType().equals(Material.AIR)) {
+            if (itemFrame.getItem().getType() != Material.AIR) {
                 itemFrame.setGlowing(false);
                 itemFrame.setVisible(false);
             }
@@ -128,7 +128,7 @@ public class RegularInvisibleItemFrames implements PluginModule, Listener {
 
         scheduler.runAtEntityLater(damaged, () -> {
             ItemFrame itemFrame = (ItemFrame) damaged;
-            if (itemFrame.getItem().getType().equals(Material.AIR)) {
+            if (itemFrame.getItem().getType() == Material.AIR) {
                 itemFrame.setVisible(true);
                 if (placed_item_frames_have_glowing_outlines)
                     itemFrame.setGlowing(true);

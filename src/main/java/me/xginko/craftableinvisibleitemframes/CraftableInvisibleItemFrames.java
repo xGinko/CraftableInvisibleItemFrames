@@ -75,7 +75,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
     public static NamespacedKey getKey(final String key) {
         return new NamespacedKey(instance, key);
     }
-    public static FoliaLib getFoliaLib() {
+    public static FoliaLib foliaLib() {
         return foliaLib;
     }
     public static Logger logger() {

@@ -5,7 +5,7 @@ import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
 import me.xginko.craftableinvisibleitemframes.enums.Keys;
 import me.xginko.craftableinvisibleitemframes.models.DroppedFrameLocation;
 import me.xginko.craftableinvisibleitemframes.models.InvisibleGlowItemFrame;
-import me.xginko.craftableinvisibleitemframes.utils.CommonUtil;
+import me.xginko.craftableinvisibleitemframes.utils.Util;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -22,19 +22,19 @@ import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
 
 public class GlowsquidInvisibleItemFrames implements PluginModule, Listener {
 
     private final ServerImplementation scheduler;
-    private final Set<DroppedFrameLocation> droppedGlowsquidFrames = new HashSet<>();
+    private final Set<DroppedFrameLocation> droppedGlowsquidFrames = new CopyOnWriteArraySet<>();
     private final boolean placed_item_frames_have_glowing_outlines;
 
     protected GlowsquidInvisibleItemFrames() {
-        this.scheduler = CraftableInvisibleItemFrames.getFoliaLib().getImpl();
+        this.scheduler = CraftableInvisibleItemFrames.foliaLib().getImpl();
         this.placed_item_frames_have_glowing_outlines = CraftableInvisibleItemFrames.config().glowsquid_placed_item_frames_have_glowing_outlines;
     }
 
@@ -56,7 +56,7 @@ public class GlowsquidInvisibleItemFrames implements PluginModule, Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onCraft(PrepareItemCraftEvent event) {
-        if (!CommonUtil.isInvisibleItemFrameRecipe(event.getRecipe())) return;
+        if (!Util.isInvisibleItemFrameRecipe(event.getRecipe())) return;
         if (!(event.getView().getPlayer() instanceof Player)) return;
         Player player = (Player) event.getView().getPlayer();
 
@@ -65,15 +65,15 @@ public class GlowsquidInvisibleItemFrames implements PluginModule, Listener {
         CraftingInventory craftingInventory = event.getInventory();
 
         for (ItemStack item : craftingInventory.getMatrix()) {
-            if (item == null || item.getType().equals(Material.AIR)) continue;
+            if (item == null || item.getType() == Material.AIR) continue;
 
-            if (item.getType().equals(Material.GLOW_INK_SAC)) {
+            if (item.getType() == Material.GLOW_INK_SAC) {
                 if (foundGlowIncSac) return;
                 foundGlowIncSac = true;
                 continue;
             }
 
-            if (CommonUtil.isInvisibleItemFrame(item)) {
+            if (Util.isInvisibleItemFrame(item)) {
                 if (foundInvisIframe) return;
                 foundInvisIframe = true;
                 continue;
@@ -94,8 +94,8 @@ public class GlowsquidInvisibleItemFrames implements PluginModule, Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onHangingPlace(HangingPlaceEvent event) {
         Hanging hanging = event.getEntity();
-        if (!hanging.getType().equals(EntityType.GLOW_ITEM_FRAME)) return;
-        if (!CommonUtil.isInvisibleGlowItemFrame(event.getItemStack())) return;
+        if (hanging.getType() != EntityType.GLOW_ITEM_FRAME) return;
+        if (!Util.isInvisibleGlowItemFrame(event.getItemStack())) return;
         final Player player = event.getPlayer();
         if (player == null) return;
 
@@ -119,7 +119,7 @@ public class GlowsquidInvisibleItemFrames implements PluginModule, Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onHangingBreak(HangingBreakEvent event) {
         Hanging hanging = event.getEntity();
-        if (!hanging.getType().equals(EntityType.GLOW_ITEM_FRAME)) return;
+        if (hanging.getType() != EntityType.GLOW_ITEM_FRAME) return;
         if (!hanging.getPersistentDataContainer().has(Keys.INVISIBLE_GLOW_ITEM_FRAME.key(), PersistentDataType.BYTE)) return;
 
         // Sets up a bounding box that checks for items near the frame to convert them
@@ -131,13 +131,13 @@ public class GlowsquidInvisibleItemFrames implements PluginModule, Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onItemSpawn(ItemSpawnEvent event) {
         Item itemEntity = event.getEntity();
-        if (!itemEntity.getItemStack().getType().equals(Material.GLOW_ITEM_FRAME)) return;
+        if (itemEntity.getItemStack().getType() != Material.GLOW_ITEM_FRAME) return;
 
         Iterator<DroppedFrameLocation> droppedFrameLocationIterator = droppedGlowsquidFrames.iterator();
         while (droppedFrameLocationIterator.hasNext()) {
             DroppedFrameLocation droppedFrameLocation = droppedFrameLocationIterator.next();
             if (droppedFrameLocation.isFrame(itemEntity)) {
-                itemEntity.setItemStack(new InvisibleGlowItemFrame(1, CommonUtil.getRandomNearbyPlayerLang(itemEntity.getLocation())));
+                itemEntity.setItemStack(new InvisibleGlowItemFrame(1, Util.getRandomNearbyPlayerLang(itemEntity.getLocation())));
                 droppedFrameLocation.getRemoval().cancel();
                 droppedFrameLocationIterator.remove();
                 return;
@@ -148,12 +148,12 @@ public class GlowsquidInvisibleItemFrames implements PluginModule, Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         Entity clicked = event.getRightClicked();
-        if (!clicked.getType().equals(EntityType.GLOW_ITEM_FRAME)) return;
+        if (clicked.getType() != EntityType.GLOW_ITEM_FRAME) return;
         if (!clicked.getPersistentDataContainer().has(Keys.INVISIBLE_GLOW_ITEM_FRAME.key(), PersistentDataType.BYTE)) return;
 
         scheduler.runAtEntityLater(clicked, () -> {
             GlowItemFrame glowItemFrame = (GlowItemFrame) clicked;
-            if (!glowItemFrame.getItem().getType().equals(Material.AIR)) {
+            if (glowItemFrame.getItem().getType() != Material.AIR) {
                 glowItemFrame.setGlowing(false);
                 glowItemFrame.setVisible(false);
             }
@@ -163,12 +163,12 @@ public class GlowsquidInvisibleItemFrames implements PluginModule, Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         Entity damaged = event.getEntity();
-        if (!damaged.getType().equals(EntityType.GLOW_ITEM_FRAME)) return;
+        if (damaged.getType() != EntityType.GLOW_ITEM_FRAME) return;
         if (!damaged.getPersistentDataContainer().has(Keys.INVISIBLE_GLOW_ITEM_FRAME.key(), PersistentDataType.BYTE)) return;
 
         scheduler.runAtEntityLater(damaged, () -> {
             GlowItemFrame glowItemFrame = (GlowItemFrame) damaged;
-            if (glowItemFrame.getItem().getType().equals(Material.AIR)) {
+            if (glowItemFrame.getItem().getType() == Material.AIR) {
                 glowItemFrame.setVisible(true);
                 if (placed_item_frames_have_glowing_outlines)
                     glowItemFrame.setGlowing(true);

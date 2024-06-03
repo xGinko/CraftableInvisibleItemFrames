@@ -15,18 +15,22 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.Random;
 
-public class CommonUtil {
+public class Util {
+
+    public static final Random RANDOM = new Random();
 
     public static boolean isInvisibleItemFrame(ItemStack itemStack) {
         return  itemStack != null
                 && itemStack.getType() == Material.ITEM_FRAME
-                && itemStack.getItemMeta().getPersistentDataContainer().has(Keys.INVISIBLE_ITEM_FRAME.key(), PersistentDataType.BYTE);
+                && itemStack.getItemMeta().getPersistentDataContainer()
+                .has(Keys.INVISIBLE_ITEM_FRAME.key(), PersistentDataType.BYTE);
     }
 
     public static boolean isInvisibleGlowItemFrame(ItemStack itemStack) {
         return  itemStack != null
                 && itemStack.getType() == Material.GLOW_ITEM_FRAME
-                && itemStack.getItemMeta().getPersistentDataContainer().has(Keys.INVISIBLE_GLOW_ITEM_FRAME.key(), PersistentDataType.BYTE);
+                && itemStack.getItemMeta().getPersistentDataContainer()
+                .has(Keys.INVISIBLE_GLOW_ITEM_FRAME.key(), PersistentDataType.BYTE);
     }
 
     public static boolean isInvisibleItemFrameRecipe(Recipe recipe) {
@@ -39,6 +43,6 @@ public class CommonUtil {
     public static Locale getRandomNearbyPlayerLang(Location location) {
         Collection<Player> nearbyPlayers = location.getNearbyPlayers(4,4,4);
         if (nearbyPlayers.isEmpty()) return CraftableInvisibleItemFrames.config().default_lang;
-        return new ArrayList<>(nearbyPlayers).get(new Random().nextInt(nearbyPlayers.size())).locale();
+        return new ArrayList<>(nearbyPlayers).get(RANDOM.nextInt(nearbyPlayers.size())).locale();
     }
 }

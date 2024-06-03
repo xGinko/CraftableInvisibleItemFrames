@@ -3,7 +3,7 @@ package me.xginko.craftableinvisibleitemframes.config;
 import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
 import me.xginko.craftableinvisibleitemframes.enums.Keys;
 import me.xginko.craftableinvisibleitemframes.models.InvisibleItemFrame;
-import me.xginko.craftableinvisibleitemframes.utils.CommonUtil;
+import me.xginko.craftableinvisibleitemframes.utils.Util;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 public class Config {
@@ -100,9 +101,9 @@ public class Config {
     }
 
     public List<ItemStack> getItemStackList(String path, List<ItemStack> def) {
-        if (config.isSet(path)) return (List<ItemStack>) config.getList(path);
+        if (config.isSet(path)) return new CopyOnWriteArrayList<>((List<ItemStack>) config.getList(path));
         config.set(path, def);
-        return def;
+        return new CopyOnWriteArrayList<>(def);
     }
 
     public void addToRecipeCenterItems(ItemStack item) {
@@ -123,8 +124,7 @@ public class Config {
     }
 
     public void registerRecipe(List<ItemStack> centerItems) {
-        CraftableInvisibleItemFrames plugin = CraftableInvisibleItemFrames.getInstance();
-        plugin.getFoliaLib().runNextTick(addRecipe -> {
+        CraftableInvisibleItemFrames.foliaLib().getImpl().runNextTick(addRecipe -> {
             plugin.getServer().addRecipe(new ShapedRecipe(Keys.INVISIBLE_ITEM_FRAME_RECIPE.key(), new InvisibleItemFrame(8))
                     .shape("FFF", "FPF", "FFF")
                     .setIngredient('F', Material.ITEM_FRAME)
@@ -134,11 +134,10 @@ public class Config {
     }
 
     public void unregisterRecipe() {
-        CraftableInvisibleItemFrames plugin = CraftableInvisibleItemFrames.getInstance();
-        plugin.getFoliaLib().runNextTick(removeRecipe -> {
+        CraftableInvisibleItemFrames.foliaLib().getImpl().runNextTick(removeRecipe -> {
             Iterator<Recipe> recipeIterator = plugin.getServer().recipeIterator();
             while (recipeIterator.hasNext()) {
-                if (CommonUtil.isInvisibleItemFrameRecipe(recipeIterator.next())) {
+                if (Util.isInvisibleItemFrameRecipe(recipeIterator.next())) {
                     recipeIterator.remove();
                     return;
                 }

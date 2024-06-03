@@ -2,7 +2,7 @@ package me.xginko.craftableinvisibleitemframes.modules;
 
 import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
 import me.xginko.craftableinvisibleitemframes.models.InvisibleItemFrame;
-import me.xginko.craftableinvisibleitemframes.utils.CommonUtil;
+import me.xginko.craftableinvisibleitemframes.utils.Util;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -33,7 +33,7 @@ public class TranslateCraftingSuggestion implements PluginModule, Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onCraft(PrepareItemCraftEvent event) {
-        if (!CommonUtil.isInvisibleItemFrameRecipe(event.getRecipe())) return;
+        if (!Util.isInvisibleItemFrameRecipe(event.getRecipe())) return;
         if (!(event.getView().getPlayer() instanceof Player)) return;
         Player player = (Player) event.getView().getPlayer();
 

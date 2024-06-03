@@ -31,7 +31,7 @@ public class ReloadSubCommand extends SubCommand {
             return true;
         }
 
-        CraftableInvisibleItemFrames.getFoliaLib().getImpl().runNextTick(reload -> {
+        CraftableInvisibleItemFrames.foliaLib().getImpl().runNextTick(reload -> {
             CraftableInvisibleItemFrames.getInstance().reloadPlugin();
             sender.sendMessage(Component.text("Reload complete.").color(NamedTextColor.GREEN));
         });
