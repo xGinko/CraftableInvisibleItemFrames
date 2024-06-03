@@ -7,7 +7,6 @@ import me.xginko.craftableinvisibleitemframes.config.LanguageCache;
 import me.xginko.craftableinvisibleitemframes.models.ReApplyGlowOutlinesTask;
 import me.xginko.craftableinvisibleitemframes.modules.PluginModule;
 import org.bstats.bukkit.Metrics;
-import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -30,6 +29,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
     private static Map<String, LanguageCache> languageCacheMap;
     private static Config config;
     private static Logger logger;
+    private static Metrics metrics;
     private static boolean isGlowVariantCompatible;
 
     @Override
@@ -37,7 +37,7 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         instance = this;
         logger = getLogger();
         foliaLib = new FoliaLib(this);
-        new Metrics(this, 17841);
+        metrics = new Metrics(this, 17841);
 
         logger.info("                         ");
         logger.info("           /*\\           ");
@@ -66,30 +66,51 @@ public final class CraftableInvisibleItemFrames extends JavaPlugin {
         logger.info("Done.");
     }
 
+    @Override
+    public void onDisable() {
+        isGlowVariantCompatible = false;
+        if (metrics != null)
+            metrics.shutdown();
+        metrics = null;
+        if (config != null)
+            config.saveConfig();
+        config = null;
+        if (languageCacheMap != null)
+            languageCacheMap.clear();
+        languageCacheMap = null;
+        logger = null;
+        foliaLib = null;
+        instance = null;
+    }
+
     public static CraftableInvisibleItemFrames getInstance()  {
         return instance;
     }
+
     public static Config config() {
         return config;
     }
-    public static NamespacedKey getKey(final String key) {
-        return new NamespacedKey(instance, key);
-    }
+
     public static FoliaLib foliaLib() {
         return foliaLib;
     }
+
     public static Logger logger() {
         return logger;
     }
+
     public static LanguageCache getLang(Locale locale) {
         return getLang(locale.toString().toLowerCase());
     }
+
     public static LanguageCache getLang(CommandSender commandSender) {
         return commandSender instanceof Player ? getLang(((Player) commandSender).locale()) : getLang(config.default_lang);
     }
+
     public static LanguageCache getLang(String lang) {
         return config.auto_lang ? languageCacheMap.getOrDefault(lang.replace("-", "_"), languageCacheMap.get(config.default_lang.toString().toLowerCase())) : languageCacheMap.get(config.default_lang.toString().toLowerCase());
     }
+
     public static boolean isGlowVariantCompatible() {
         return isGlowVariantCompatible;
     }

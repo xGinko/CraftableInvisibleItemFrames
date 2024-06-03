@@ -3,6 +3,7 @@ package me.xginko.craftableinvisibleitemframes.modules;
 import me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames;
 
 import java.util.HashSet;
+import java.util.Set;
 
 public interface PluginModule {
 
@@ -10,7 +11,7 @@ public interface PluginModule {
     boolean shouldEnable();
     void disable();
 
-    HashSet<PluginModule> modules = new HashSet<>();
+    Set<PluginModule> modules = new HashSet<>();
 
     static void reloadModules() {
         modules.forEach(PluginModule::disable);

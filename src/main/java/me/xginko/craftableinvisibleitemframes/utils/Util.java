@@ -23,19 +23,19 @@ public class Util {
         return  itemStack != null
                 && itemStack.getType() == Material.ITEM_FRAME
                 && itemStack.getItemMeta().getPersistentDataContainer()
-                .has(Keys.INVISIBLE_ITEM_FRAME.key(), PersistentDataType.BYTE);
+                .has(Keys.INVISIBLE_ITEM_FRAME.get(), PersistentDataType.BYTE);
     }
 
     public static boolean isInvisibleGlowItemFrame(ItemStack itemStack) {
         return  itemStack != null
                 && itemStack.getType() == Material.GLOW_ITEM_FRAME
                 && itemStack.getItemMeta().getPersistentDataContainer()
-                .has(Keys.INVISIBLE_GLOW_ITEM_FRAME.key(), PersistentDataType.BYTE);
+                .has(Keys.INVISIBLE_GLOW_ITEM_FRAME.get(), PersistentDataType.BYTE);
     }
 
     public static boolean isInvisibleItemFrameRecipe(Recipe recipe) {
         if (recipe instanceof ShapedRecipe) {
-            return ((ShapedRecipe) recipe).getKey().equals(Keys.INVISIBLE_ITEM_FRAME_RECIPE.key());
+            return ((ShapedRecipe) recipe).getKey().equals(Keys.INVISIBLE_ITEM_FRAME_RECIPE.get());
         }
         return false;
     }

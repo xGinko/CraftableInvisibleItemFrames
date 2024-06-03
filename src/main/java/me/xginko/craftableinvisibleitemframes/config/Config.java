@@ -125,7 +125,7 @@ public class Config {
 
     public void registerRecipe(List<ItemStack> centerItems) {
         CraftableInvisibleItemFrames.foliaLib().getImpl().runNextTick(addRecipe -> {
-            plugin.getServer().addRecipe(new ShapedRecipe(Keys.INVISIBLE_ITEM_FRAME_RECIPE.key(), new InvisibleItemFrame(8))
+            plugin.getServer().addRecipe(new ShapedRecipe(Keys.INVISIBLE_ITEM_FRAME_RECIPE.get(), new InvisibleItemFrame(8))
                     .shape("FFF", "FPF", "FFF")
                     .setIngredient('F', Material.ITEM_FRAME)
                     .setIngredient('P', new RecipeChoice.ExactChoice(centerItems))

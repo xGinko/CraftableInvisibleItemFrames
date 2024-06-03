@@ -35,7 +35,7 @@ public class ReApplyGlowOutlinesTask implements Consumer<WrappedTask> {
                             if (!entity.getType().name().contains("ITEM_FRAME")) return;
                             ItemFrame itemFrame = (ItemFrame) entity;
 
-                            if (itemFrame.getPersistentDataContainer().has(Keys.INVISIBLE_GLOW_ITEM_FRAME.key(), PersistentDataType.BYTE)) {
+                            if (itemFrame.getPersistentDataContainer().has(Keys.INVISIBLE_GLOW_ITEM_FRAME.get(), PersistentDataType.BYTE)) {
                                 if (glow_item_frames && itemFrame.getItem().getType().equals(Material.AIR)) {
                                     itemFrame.setGlowing(true);
                                     itemFrame.setVisible(true);
@@ -46,7 +46,7 @@ public class ReApplyGlowOutlinesTask implements Consumer<WrappedTask> {
                                 }
                             }
 
-                            if (itemFrame.getPersistentDataContainer().has(Keys.INVISIBLE_ITEM_FRAME.key(), PersistentDataType.BYTE)) {
+                            if (itemFrame.getPersistentDataContainer().has(Keys.INVISIBLE_ITEM_FRAME.get(), PersistentDataType.BYTE)) {
                                 if (reg_item_frames && itemFrame.getItem().getType() == Material.AIR) {
                                     itemFrame.setGlowing(true);
                                     itemFrame.setVisible(true);

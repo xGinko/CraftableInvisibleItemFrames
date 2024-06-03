@@ -112,7 +112,7 @@ public class GlowsquidInvisibleItemFrames implements PluginModule, Listener {
                 glowItemFrame.setVisible(true);
                 glowItemFrame.setGlowing(true);
             }
-            glowItemFrame.getPersistentDataContainer().set(Keys.INVISIBLE_GLOW_ITEM_FRAME.key(), PersistentDataType.BYTE, (byte) 1);
+            glowItemFrame.getPersistentDataContainer().set(Keys.INVISIBLE_GLOW_ITEM_FRAME.get(), PersistentDataType.BYTE, (byte) 1);
         });
     }
 
@@ -120,7 +120,7 @@ public class GlowsquidInvisibleItemFrames implements PluginModule, Listener {
     private void onHangingBreak(HangingBreakEvent event) {
         Hanging hanging = event.getEntity();
         if (hanging.getType() != EntityType.GLOW_ITEM_FRAME) return;
-        if (!hanging.getPersistentDataContainer().has(Keys.INVISIBLE_GLOW_ITEM_FRAME.key(), PersistentDataType.BYTE)) return;
+        if (!hanging.getPersistentDataContainer().has(Keys.INVISIBLE_GLOW_ITEM_FRAME.get(), PersistentDataType.BYTE)) return;
 
         // Sets up a bounding box that checks for items near the frame to convert them
         DroppedFrameLocation droppedFrameLocation = new DroppedFrameLocation(hanging.getLocation());
@@ -149,7 +149,7 @@ public class GlowsquidInvisibleItemFrames implements PluginModule, Listener {
     private void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         Entity clicked = event.getRightClicked();
         if (clicked.getType() != EntityType.GLOW_ITEM_FRAME) return;
-        if (!clicked.getPersistentDataContainer().has(Keys.INVISIBLE_GLOW_ITEM_FRAME.key(), PersistentDataType.BYTE)) return;
+        if (!clicked.getPersistentDataContainer().has(Keys.INVISIBLE_GLOW_ITEM_FRAME.get(), PersistentDataType.BYTE)) return;
 
         scheduler.runAtEntityLater(clicked, () -> {
             GlowItemFrame glowItemFrame = (GlowItemFrame) clicked;
@@ -164,7 +164,7 @@ public class GlowsquidInvisibleItemFrames implements PluginModule, Listener {
     private void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         Entity damaged = event.getEntity();
         if (damaged.getType() != EntityType.GLOW_ITEM_FRAME) return;
-        if (!damaged.getPersistentDataContainer().has(Keys.INVISIBLE_GLOW_ITEM_FRAME.key(), PersistentDataType.BYTE)) return;
+        if (!damaged.getPersistentDataContainer().has(Keys.INVISIBLE_GLOW_ITEM_FRAME.get(), PersistentDataType.BYTE)) return;
 
         scheduler.runAtEntityLater(damaged, () -> {
             GlowItemFrame glowItemFrame = (GlowItemFrame) damaged;

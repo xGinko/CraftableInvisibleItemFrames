@@ -21,7 +21,7 @@ public class InvisibleItemFrame extends ItemStack {
         super(Material.ITEM_FRAME, stackSize);
         ItemMeta meta = getItemMeta();
         meta.displayName(CraftableInvisibleItemFrames.getLang(locale).invisible_item_frame);
-        meta.getPersistentDataContainer().set(Keys.INVISIBLE_ITEM_FRAME.key(), PersistentDataType.BYTE, (byte) 1);
+        meta.getPersistentDataContainer().set(Keys.INVISIBLE_ITEM_FRAME.get(), PersistentDataType.BYTE, (byte) 1);
         if (CraftableInvisibleItemFrames.config().regular_item_frames_should_be_enchanted) {
             meta.addEnchant(Enchantment.CHANNELING, 1, true);
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
