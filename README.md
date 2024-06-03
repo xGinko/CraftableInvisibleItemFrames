@@ -23,4 +23,4 @@ Permission to run /iframe additem (allows adding a specific item to be used for 
 - craftableinvisibleitemframes.cmd.removeitem
 Permission to run /iframe removeitem
 
-#### Supports versions 1.16 - 1.20.2 + Folia
+#### Supports versions 1.17 - 1.20.2 + Folia
