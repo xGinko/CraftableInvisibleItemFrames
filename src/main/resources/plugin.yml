@@ -1,39 +1,8 @@
-name: CraftableInvisibleItemFrames
-prefix: InvisibleItemFrames
-version: '${project.version}'
-main: me.xginko.craftableinvisibleitemframes.CraftableInvisibleItemFrames
+name: '${name}'
+version: '${version}'
+main: me.xginko.craftinvisframes.CraftInvisFrames
 authors: [ xGinko ]
-description: ${project.description}
-website: ${project.url}
-api-version: 1.17
+description: '${description}'
+website: '${url}'
+api-version: 1.21
 folia-supported: true
-
-permissions:
-  craftableinvisibleitemframes.craft:
-    description: Allows a player to craft an invisible itemframe
-    default: not op
-  craftableinvisibleitemframes.place:
-    description: Allows a player to place an invisible itemframe from the inventory
-    default: not op
-  craftableinvisibleitemframes.cmd.*:
-    description: Command permissions
-    default: op
-    children:
-      craftableinvisibleitemframes.cmd.reload: true
-      craftableinvisibleitemframes.cmd.version: true
-      craftableinvisibleitemframes.cmd.get: true
-      craftableinvisibleitemframes.cmd.additem: true
-      craftableinvisibleitemframes.cmd.removeitem: true
-      craftableinvisibleitemframes.cmd.forcerecheck: true
-  craftableinvisibleitemframes.cmd.reload:
-    description: Permission to reload the plugin config
-  craftableinvisibleitemframes.cmd.version:
-    description: Permission to show the plugin version
-  craftableinvisibleitemframes.cmd.forcerecheck:
-    description: Permission to force a recheck of all itemframes
-  craftableinvisibleitemframes.cmd.get:
-    description: Permission to get an invisible itemframe via command
-  craftableinvisibleitemframes.cmd.additem:
-    description: Permission to add a held item to the craftingrecipe center items list
-  craftableinvisibleitemframes.cmd.removeitem:
-    description: Permission to remove a held item from the craftingrecipe center items list

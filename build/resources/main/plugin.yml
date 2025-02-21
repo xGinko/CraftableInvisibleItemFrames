@@ -1,0 +1,8 @@
+name: 'CraftInvisFrames'
+version: '1.6.0'
+main: me.xginko.craftinvisframes.CraftInvisFrames
+authors: [ xGinko ]
+description: 'Craft invisible item frames in-game.'
+website: 'https://github.com/xGinko'
+api-version: 1.21
+folia-supported: true
