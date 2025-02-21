@@ -10,7 +10,6 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.GlowItemFrame;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
@@ -21,7 +20,6 @@ import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -59,14 +57,12 @@ public class GlowItemFrames extends FrameModule implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onCraft(PrepareItemCraftEvent event) {
-        if (!InvisbleItemFrameRecipe.isInvisFrameRecipe(event.getRecipe())) return;
-        if (!(event.getView().getPlayer() instanceof Player player)) return;
+        if (InvisbleItemFrameRecipe.isInvisFrameRecipe(event.getRecipe())) return;
 
         boolean foundInvisIframe = false;
         boolean foundGlowIncSac = false;
-        CraftingInventory craftingInventory = event.getInventory();
 
-        for (ItemStack item : craftingInventory.getMatrix()) {
+        for (ItemStack item : event.getInventory().getMatrix()) {
             if (item == null || item.getType() == Material.AIR) continue;
 
             if (item.getType() == Material.GLOW_INK_SAC) {
@@ -85,7 +81,7 @@ public class GlowItemFrames extends FrameModule implements Listener {
         }
 
         if (foundInvisIframe && foundGlowIncSac) {
-            craftingInventory.setResult(new InvisibleGlowItemFrame(1, item_display_name, enchant_item));
+            event.getInventory().setResult(new InvisibleGlowItemFrame(1, item_display_name, enchant_item));
         }
     }
 
